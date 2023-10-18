@@ -30,16 +30,19 @@ def imu_data_listener(client_socket):
     while True:
         
         try:
-            data = client_socket.recv(1024)
-            #data = client_socket.recvfrom(1024)
+            # data = client_socket.recv(1024)
+            data, addr = client_socket.recvfrom(1024)
             if not data:
                 break
-
+            
+            # print("hi")
             # Decode the received data as UTF-8
-            data_str = data.decode('utf-8')
+            data1 = data.decode("utf-8")  # BYTE TO STRING DECODING USING UTF-8
+            data1 = data1.replace("\r", "").replace("\n", "")
+            values = data1.split(',')
 
             # Remove newline characters and split the values
-            values = data_str.replace("\r", "").replace("\n", "").split(',')
+            # values = data_str.replace("\r", "").replace("\n", "").split(',')
 
             try:
                 values.remove('')
@@ -94,19 +97,23 @@ def imu_data_listener(client_socket):
 
 def tcp_server():
     #10.90.2.136
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    # server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server_socket.bind(('192.168.64.172', 8910))  # Change the port as needed
-    server_socket.listen(1)
+    # server_socket.listen(1)
 
     print('TCP server listening on port 8910')
 
     while True:
-        client_socket, addr = server_socket.accept()
-        print('Accepted connection from', addr)
+        # client_socket, addr = server_socket.accept()
+        client_socket, client_address = server_socket.recvfrom(1024)
+        print('Accepted connection from', client_address)
 
         # Start a new thread to handle IMU data from this client
-        imu_thread = threading.Thread(target=imu_data_listener, args=(client_socket,))
+        # imu_thread = threading.Thread(target=imu_data_listener, args=(client_socket,))
+        # imu_thread.start()
+
+        imu_thread = threading.Thread(target=imu_data_listener, args=(server_socket,))
         imu_thread.start()
 
 if __name__ == '__main__':
