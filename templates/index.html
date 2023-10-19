@@ -35,6 +35,12 @@
             <p><strong>Y:</strong> <span id="orientation-y"></span></p>
             <p><strong>Z:</strong> <span id="orientation-z"></span></p>
         </div>
+        <div id="gps-data" class="imu-section" onclick="createGPSGraph('gps data')">
+            <h3>GPS Data</h3>
+            <p><strong>Latitude:</strong> <span id="latitude"></span></p>
+            <p><strong>Longitude:</strong> <span id="longitude"></span></p>
+            <p><strong>Altitude:</strong> <span id="altitude"></span></p>
+        </div>
     </div>
 
     <div class="graph-container" id="graph-container"></div>
@@ -42,81 +48,182 @@
 
     <!-- ... (your existing HTML) ... -->
 
-<script>
-    function createGraph(type) {
-        // Create a new canvas element for the graph
-        const canvas = document.createElement('canvas');
-        canvas.width = 150; // Set the width as needed
-        canvas.height = 75; // Set the height as needed
-        canvas.style.marginTop = '10px';
-
-        // Append the canvas to the graph container
-        document.getElementById('graph-container').innerHTML = '';
-        document.getElementById('graph-container').appendChild(canvas);
-
-        // Initialize the data structure for the last 30 seconds
-        const initData = Array.from({ length: 30 }, () => ({ x: null, y: null, z: null }));
-
-        // Create a chart using Chart.js
-        const ctx = canvas.getContext('2d');
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: Array.from({ length: 30 }, (_, i) => i + 1), // Labels for the last 30 seconds
-                datasets: [
-                    {
-                        label: `${type} X`,
-                        data: initData.map(entry => entry.x),
-                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                        borderColor: 'rgba(52, 152, 219, 1)',
-                        borderWidth: 2,
-                        pointRadius: 5,
-                        pointBackgroundColor: 'rgba(52, 152, 219, 1)',
-                    },
-                    {
-                        label: `${type} Y`,
-                        data: initData.map(entry => entry.y),
-                        backgroundColor: 'rgba(155, 89, 182, 0.2)',
-                        borderColor: 'rgba(155, 89, 182, 1)',
-                        borderWidth: 2,
-                        pointRadius: 5,
-                        pointBackgroundColor: 'rgba(155, 89, 182, 1)',
-                    },
-                    {
-                        label: `${type} Z`,
-                        data: initData.map(entry => entry.z),
-                        backgroundColor: 'rgba(46, 204, 113, 0.2)',
-                        borderColor: 'rgba(46, 204, 113, 1)',
-                        borderWidth: 2,
-                        pointRadius: 5,
-                        pointBackgroundColor: 'rgba(46, 204, 113, 1)',
-                    },
-                ]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+    <script>
+        function createGraph(type) {
+            // Create a new canvas element for the graph
+            const canvas = document.createElement('canvas');
+            canvas.width = 150; // Set the width as needed
+            canvas.height = 75; // Set the height as needed
+            canvas.style.marginTop = '10px';
+    
+            // Append the canvas to the graph container
+            document.getElementById('graph-container').innerHTML = '';
+            document.getElementById('graph-container').appendChild(canvas);
+    
+            // Initialize the data structure for the last 30 seconds
+            const initData = Array.from({ length: 30 }, () => ({ x: null, y: null, z: null }));
+    
+            // Create a chart using Chart.js
+            const ctx = canvas.getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({ length: 30 }, (_, i) => i + 1), // Labels for the last 30 seconds
+                    datasets: [
+                        {
+                            label: `${type} X`,
+                            data: initData.map(entry => entry.x),
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+                        },
+                        {
+                            label: `${type} Y`,
+                            data: initData.map(entry => entry.y),
+                            backgroundColor: 'rgba(155, 89, 182, 0.2)',
+                            borderColor: 'rgba(155, 89, 182, 1)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(155, 89, 182, 1)',
+                        },
+                        {
+                            label: `${type} Z`,
+                            data: initData.map(entry => entry.z),
+                            backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                            borderColor: 'rgba(46, 204, 113, 1)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(46, 204, 113, 1)',
+                        },
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
                     }
                 }
+            });
+    
+            // Function to update the chart with new data
+            function updateChart() {
+                // Get the values for the selected type
+                const xValue = parseFloat(document.getElementById(`${type}-x`).innerText);
+                const yValue = parseFloat(document.getElementById(`${type}-y`).innerText);
+                const zValue = parseFloat(document.getElementById(`${type}-z`).innerText);
+    
+                // Update the data structure with the new values
+                const newData = { x: xValue, y: yValue, z: zValue };
+                chart.data.datasets[0].data.shift();
+                chart.data.datasets[1].data.shift();
+                chart.data.datasets[2].data.shift();
+                chart.data.datasets[0].data.push(newData.x);
+                chart.data.datasets[1].data.push(newData.y);
+                chart.data.datasets[2].data.push(newData.z);
+    
+                // Update the chart
+                chart.update();
             }
+    
+            // Set up an interval to update the chart every second
+            setInterval(updateChart, 1000);
+        }
+    
+        function createGPSGraph() {
+            // Create a new canvas element for the graph
+            const canvas = document.createElement('canvas');
+            canvas.width = 150; // Set the width as needed
+            canvas.height = 75; // Set the height as needed
+            canvas.style.marginTop = '10px';
+
+            // Append the canvas to the graph container
+            document.getElementById('graph-container').innerHTML = '';
+            document.getElementById('graph-container').appendChild(canvas);
+
+            // Initialize the data structure for the last 30 seconds
+            const initData = Array.from({ length: 30 }, () => ({ latitude: null, longitude: null, altitude: null }));
+
+            // Create a chart using Chart.js
+            const ctx = canvas.getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({ length: 30 }, (_, i) => i + 1), // Labels for the last 30 seconds
+                    datasets: [
+                        {
+                            label: 'Latitude',
+                            data: initData.map(entry => entry.latitude),
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+                            yAxisID: 'latitude-axis',
+                        },
+                        {
+                            label: 'Longitude',
+                            data: initData.map(entry => entry.longitude),
+                            backgroundColor: 'rgba(155, 89, 182, 0.2)',
+                            borderColor: 'rgba(155, 89, 182, 1)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(155, 89, 182, 1)',
+                            yAxisID: 'longitude-axis',
+                        },
+                        {
+                            label: 'Altitude',
+                            data: initData.map(entry => entry.altitude),
+                            backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                            borderColor: 'rgba(46, 204, 113, 1)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(46, 204, 113, 1)',
+                            yAxisID: 'altitude-axis',
+                        },
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        },
+                        'latitude-axis': {
+                            type: 'linear',
+                            position: 'left',
+                            beginAtZero: true,
+                        },
+                        'longitude-axis': {
+                            type: 'linear',
+                            position: 'left',
+                            beginAtZero: true,
+                        },
+                        'altitude-axis': {
+                            type: 'linear',
+                            position: 'right',
+                            beginAtZero: true,
+                        },
+                    }
+                }
         });
 
         // Function to update the chart with new data
         function updateChart() {
-            // Get the values for the selected type
-            const xValue = parseFloat(document.getElementById(`${type}-x`).innerText);
-            const yValue = parseFloat(document.getElementById(`${type}-y`).innerText);
-            const zValue = parseFloat(document.getElementById(`${type}-z`).innerText);
+            // Get the values for latitude, longitude, and altitude
+            const latitude = parseFloat(document.getElementById('latitude').innerText);
+            const longitude = parseFloat(document.getElementById('longitude').innerText);
+            const altitude = parseFloat(document.getElementById('altitude').innerText);
 
             // Update the data structure with the new values
-            const newData = { x: xValue, y: yValue, z: zValue };
+            const newData = { latitude, longitude, altitude };
             chart.data.datasets[0].data.shift();
             chart.data.datasets[1].data.shift();
             chart.data.datasets[2].data.shift();
-            chart.data.datasets[0].data.push(newData.x);
-            chart.data.datasets[1].data.push(newData.y);
-            chart.data.datasets[2].data.push(newData.z);
+            chart.data.datasets[0].data.push(newData.latitude);
+            chart.data.datasets[1].data.push(newData.longitude);
+            chart.data.datasets[2].data.push(newData.altitude);
 
             // Update the chart
             chart.update();
@@ -125,7 +232,8 @@
         // Set up an interval to update the chart every second
         setInterval(updateChart, 1000);
     }
-</script>
+    </script>
+    
 
 </body>
 

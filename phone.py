@@ -1,13 +1,18 @@
+#most comments are tcp/ip shit
+
 from flask import Flask, render_template
 from flask_socketio import SocketIO
+import rospy
 import socket
 import threading
+from sensor_msgs.msg import NavSatFix
 
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*")  # Set CORS origins as needed
+socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Store the latest IMU data
 latest_imu_data = {}
+
+latest_gps_data = {}
 
 @socketio.on('connect')
 def handle_connect():
@@ -20,6 +25,10 @@ def handle_disconnect():
 @socketio.on('request_imu_data')
 def handle_request_imu_data():
     socketio.emit('imu_data', latest_imu_data)
+
+@socketio.on('request_gps_data')
+def handle_request_gps_data():
+    socketio.emit('gps_data', latest_gps_data)
     
 @app.route('/')
 def index():
@@ -35,13 +44,11 @@ def imu_data_listener(client_socket):
             if not data:
                 break
             
-            # print("hi")
-            # Decode the received data as UTF-8
-            data1 = data.decode("utf-8")  # BYTE TO STRING DECODING USING UTF-8
+            print(data)
+            data1 = data.decode("utf-8") 
             data1 = data1.replace("\r", "").replace("\n", "")
             values = data1.split(',')
 
-            # Remove newline characters and split the values
             # values = data_str.replace("\r", "").replace("\n", "").split(',')
 
             try:
@@ -50,7 +57,6 @@ def imu_data_listener(client_socket):
                 pass
 
             if len(values) == 9:
-                # Convert values to IMU message
                 frame_id = 'base_link'
 
                 linear_acceleration_x = float(values[3])
@@ -69,7 +75,6 @@ def imu_data_listener(client_socket):
                 print(f'Angular Velocity: x={angular_velocity_x}, y={angular_velocity_y}, z={angular_velocity_z}')
                 print(f'Orientation: x={orientation_x}, y={orientation_y}, z={orientation_z}')
 
-                # Store the latest IMU data
                 latest_imu_data = {
                     'linear_acceleration': {
                         'x': linear_acceleration_x,
@@ -88,91 +93,52 @@ def imu_data_listener(client_socket):
                     }
                 }
 
-                # Emit data to connected clients
                 socketio.emit('imu_data', latest_imu_data)
 
         except Exception as e:
             print(f"Unexpected error handling IMU data: {e}")
             break
 
-def tcp_server():
-    #10.90.2.136
+
+def gps_data_listener():
+    global latest_gps_data
+    
+    def callback(msg):
+        print(msg)
+        global latest_gps_data
+        latest_gps_data = {
+            'latitude': msg.latitude,
+            'longitude': msg.longitude,
+            'altitude': msg.altitude,
+        }
+        socketio.emit('gps_data', latest_gps_data)
+
+    rospy.Subscriber('/gps/fix', NavSatFix, callback)
+    rospy.spin()
+
+def udp_server():
     # server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    server_socket.bind(('192.168.64.172', 8910))  # Change the port as needed
+    server_socket.bind(('192.168.104.172', 7777))
     # server_socket.listen(1)
 
-    print('TCP server listening on port 8910')
+    print('TCP server listening on port 7777')
 
     while True:
         # client_socket, addr = server_socket.accept()
         client_socket, client_address = server_socket.recvfrom(1024)
-        print('Accepted connection from', client_address)
-
-        # Start a new thread to handle IMU data from this client
-        # imu_thread = threading.Thread(target=imu_data_listener, args=(client_socket,))
-        # imu_thread.start()
 
         imu_thread = threading.Thread(target=imu_data_listener, args=(server_socket,))
         imu_thread.start()
 
 if __name__ == '__main__':
-    # Start the TCP server in a separate thread
-    tcp_thread = threading.Thread(target=tcp_server)
+    #multithreadin
+    rospy.init_node('gps_listener', anonymous=True)
+    
+    tcp_thread = threading.Thread(target=udp_server)
     tcp_thread.start()
 
-    # Run the Flask SocketIO app
+    gps_thread = threading.Thread(target=gps_data_listener)
+    gps_thread.start()
+
     socketio.run(app, debug=False)
-
-
-
-
-# from flask import Flask, render_template
-# from flask_socketio import SocketIO
-# from socket import socket, AF_INET, SOCK_DGRAM
-# import threading
-
-# app = Flask(__name__)
-# socketio = SocketIO(app, cors_allowed_origins="*")  # Set CORS origins as needed
-
-# # Store the latest IMU data
-# latest_imu_data = {}
-
-# @socketio.on('connect')
-# def handle_connect():
-#     print('Client connected')
-
-# @socketio.on('disconnect')
-# def handle_disconnect():
-#     print('Client disconnected')
-
-# # @socketio.on('request_imu_data')
-# # def handle_request_imu_data():
-# #     socketio.emit('imu_data', latest_imu_data)
-    
-# @app.route('/')
-# def index():
-#     return render_template('imu.html')
-
-# def imu_data_listener():
-#     sock = socket(AF_INET, SOCK_DGRAM)
-#     sock.bind(('192.168.227.172', 8916))
-#     while True:
-#         try:
-#             data,addr = sock.recvfrom(8196)
-#             socketio.emit('imu_data', data.decode())
-#             print(data)
-#         except Exception as e:
-#             print(f"Unexpected error handling IMU data: {e}")
-#             break
-
-
-
-# if __name__ == '__main__':
-
-#     # Start the TCP server in a separate thread
-#     tcp_thread = threading.Thread(target=imu_data_listener)
-#     tcp_thread.start()
-
-#     # Run the Flask SocketIO app
-#     socketio.run(app, debug=False)

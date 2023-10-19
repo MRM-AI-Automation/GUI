@@ -34,6 +34,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // Start the animation loop
     animate();
 
+    socket.on('gps_data', function(data) {
+        // Update the HTML content with the received GPS data
+        document.getElementById('latitude').innerText = data.latitude;
+        document.getElementById('longitude').innerText = data.longitude;
+        document.getElementById('altitude').innerText = data.altitude;
+    });
+
     // Handle IMU data from the server
     socket.on('imu_data', function (data) {
         // Update the HTML content with the received IMU data
