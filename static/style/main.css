@@ -32,6 +32,13 @@ body {
             cursor: pointer;
         }
 
+        /* #video {
+    		transform: rotateY(180deg);
+    		-webkit-transform:rotateY(180deg);
+    		-moz-transform:rotateY(180deg);
+    		
+    	} */
+
         .graph-container {
             width: 80%;
             margin-top: 20px;

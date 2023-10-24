@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IMU Data and Visualization</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style/main.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
@@ -42,6 +45,8 @@
             <p><strong>Altitude:</strong> <span id="altitude"></span></p>
         </div>
     </div>
+    <!-- <h1>Live Webcam Feed</h1>
+    <img id="video-feed" width="640" height="480" /> -->
 
     <div class="graph-container" id="graph-container"></div>
     <div id="canvas-container"></div>
@@ -51,6 +56,9 @@
     <!-- ... (your existing HTML) ... -->
 
     <script>
+        // Initialize an array to store data points with timestamps
+        const dataPoints = [];
+
         function createGraph(type) {
             // Create a new canvas element for the graph
             const canvas = document.createElement('canvas');
@@ -63,14 +71,14 @@
             document.getElementById('graph-container').appendChild(canvas);
     
             // Initialize the data structure for the last 30 seconds
-            const initData = Array.from({ length: 30 }, () => ({ x: null, y: null, z: null }));
+            const initData = Array.from({ length: 20 }, () => ({ x: null, y: null, z: null }));
     
             // Create a chart using Chart.js
             const ctx = canvas.getContext('2d');
             const chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: Array.from({ length: 30 }, (_, i) => i + 1), // Labels for the last 30 seconds
+                    labels: Array.from({ length: 20 }, (_, i) => i + 1), // Labels for the last 30 seconds
                     datasets: [
                         {
                             label: `${type} X`,
@@ -119,12 +127,21 @@
     
                 // Update the data structure with the new values
                 const newData = { x: xValue, y: yValue, z: zValue };
-                chart.data.datasets[0].data.shift();
-                chart.data.datasets[1].data.shift();
-                chart.data.datasets[2].data.shift();
+                chart.data.labels.push(chart.data.labels.length + 1);
                 chart.data.datasets[0].data.push(newData.x);
                 chart.data.datasets[1].data.push(newData.y);
                 chart.data.datasets[2].data.push(newData.z);
+
+                // Update the chart
+                chart.update();
+
+                // Check if more than 20 seconds of data is present, and remove the oldest data point
+                if (chart.data.labels.length > 20) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                    chart.data.datasets[1].data.shift();
+                    chart.data.datasets[2].data.shift();
+                }
     
                 // Update the chart
                 chart.update();
@@ -146,14 +163,14 @@
             document.getElementById('graph-container').appendChild(canvas);
 
             // Initialize the data structure for the last 30 seconds
-            const initData = Array.from({ length: 30 }, () => ({ latitude: null, longitude: null, altitude: null }));
+            const initData = Array.from({ length: 20 }, () => ({ latitude: null, longitude: null, altitude: null }));
 
             // Create a chart using Chart.js
             const ctx = canvas.getContext('2d');
             const chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: Array.from({ length: 30 }, (_, i) => i + 1), // Labels for the last 30 seconds
+                    labels: Array.from({ length: 20 }, (_, i) => i + 1), // Labels for the last 30 seconds
                     datasets: [
                         {
                             label: 'Latitude',

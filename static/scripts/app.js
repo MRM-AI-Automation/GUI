@@ -114,6 +114,11 @@ document.addEventListener('DOMContentLoaded', function () {
         dataReceived = true;
     });
 
+    // socket.emit('request_video_feed');
+    // socket.on('video_feed', function (data) {
+    //     document.getElementById('video-feed').src = 'data:image/jpeg;base64,' + data;
+    // });
+
     if (navigator.getGamepads) {
         // Poll for gamepad input
         function pollGamepad() {
