@@ -18,17 +18,53 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set up camera position
     camera.position.z = 5;
 
+        
+    function handleReconnect() {
+        // Implement your reconnection logic here
+        console.log('Attempting to reconnect...');
+        socket.connect();
+    }
+
+    socket.on('connect', () => {
+        console.log('Connected');
+        hideWarning();
+    });
+
+    socket.on('connect_error', (error) => {
+        console.error('Connection error', error);
+        // Set up a timer to attempt reconnection after a delay
+        setTimeout(handleReconnectAttempt, 1000); // 3 seconds delay, adjust as needed
+    });
+
+    socket.on('disconnect', () => {
+        console.warn('Disconnected');
+        showWarning('Connection lost. Reconnecting...');
+        setTimeout(handleReconnectAttempt, 3000);
+    });
+
+    socket.on('reconnect', (attemptNumber) => {
+        console.log(`Reconnected after ${attemptNumber} attempts`);
+        hideWarning();
+    });
+    
+    let dataReceived = true;
+    let lastDataReceivedTime = Date.now();
+    const MAX_DATA_AGE = 5000;
+
     // Animate the scene
     function animate() {
         requestAnimationFrame(animate);
 
-        // Rotate the cuboid for visual interest
-        // if (cuboid) {
-        //     cuboid.rotation.x += 0.01;
-        //     cuboid.rotation.y += 0.01;
-        // }
-
         renderer.render(scene, camera);
+        const currentTime = Date.now();
+        const timeDifference = currentTime - lastDataReceivedTime;
+
+        if ((timeDifference > MAX_DATA_AGE) && !dataReceived){
+            showWarning('No data received from phone. Please check the connection.');
+        } else {
+            hideWarning();
+        }
+        dataReceived = false;
     }
 
     // Start the animation loop
@@ -41,9 +77,20 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('altitude').innerText = data.altitude;
     });
 
+    function showWarning(message) {
+        const warningElement = document.getElementById('warning');
+        warningElement.innerText = message;
+        warningElement.style.display = 'block';
+    }
+    
+    // Function to hide the warning message
+    function hideWarning() {
+        const warningElement = document.getElementById('warning');
+        warningElement.style.display = 'none';
+    }
+
     // Handle IMU data from the server
     socket.on('imu_data', function (data) {
-        // Update the HTML content with the received IMU data
         document.getElementById('linear-acceleration-x').innerText = data.linear_acceleration.x;
         document.getElementById('linear-acceleration-y').innerText = data.linear_acceleration.y;
         document.getElementById('linear-acceleration-z').innerText = data.linear_acceleration.z;
@@ -56,14 +103,46 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('orientation-y').innerText = data.orientation.y;
         document.getElementById('orientation-z').innerText = data.orientation.z;
 
-        // Update cuboid rotation based on orientation with a delay
         setTimeout(function () {
             if (cuboid) {
-                // Adjust rotation based on orientation values
                 cuboid.rotation.x = -THREE.Math.degToRad(data.orientation.y+90);
                 cuboid.rotation.y = -THREE.Math.degToRad(data.orientation.z);// + THREE.MathUtils.degToRad(180);
                 cuboid.rotation.z = -THREE.Math.degToRad(data.orientation.x);
             }
         }, 0);
+
+        dataReceived = true;
     });
+
+    if (navigator.getGamepads) {
+        // Poll for gamepad input
+        function pollGamepad() {
+            var gamepads = navigator.getGamepads();
+
+            // Assuming only one controller is connected
+            var controller = gamepads[0];
+
+            // Check for button presses, analog stick values, etc.
+            if (controller) {
+                // Process controller inputs and send to the server
+                var controllerInputs = {
+                    'buttonA': controller.buttons[0].pressed,
+                    'buttonB': controller.buttons[1].pressed,
+                    'joystickX': controller.axes[0],
+                    'joystickY': controller.axes[1]
+                    // Add more inputs as needed
+                };
+
+                // Send the controller inputs to the server
+                socket.emit('controller_inputs', controllerInputs);
+            }
+
+            // Poll again in the next animation frame
+            requestAnimationFrame(pollGamepad);
+        }
+
+        // Start polling for gamepad input
+        pollGamepad();
+    }
+    
 });

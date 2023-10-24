@@ -6,29 +6,50 @@ import rospy
 import socket
 import threading
 from sensor_msgs.msg import NavSatFix
+import time
 
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", ping_timeout=5, ping_interval=2, reconnection=True, reconnection_attempts=3, reconnection_delay=1000, reconnection_timeout=5000)
 
 latest_imu_data = {}
 
 latest_gps_data = {}
 
+last_data_time = time.time()
+
+connected_clients = 0  
+
 @socketio.on('connect')
 def handle_connect():
-    print('Client connected')
+    global connected_clients
+    connected_clients += 1
+    print(f'Client connected. Total connected clients: {connected_clients}')
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    print('Client disconnected')
+    global connected_clients
+    connected_clients -= 1
+    print(f'Client disconnected. Total connected clients: {connected_clients}')
+
 
 @socketio.on('request_imu_data')
 def handle_request_imu_data():
+    global last_data_time
+    last_data_time = time.time()
     socketio.emit('imu_data', latest_imu_data)
+    print(connected_clients)
 
 @socketio.on('request_gps_data')
 def handle_request_gps_data():
     socketio.emit('gps_data', latest_gps_data)
+
+def check_connection():
+    global last_data_time, connected_clients
+    RECONNECT_TIMEOUT = 5000
+    if time.time() - last_data_time > RECONNECT_TIMEOUT and connected_clients == 0:
+        print('No data received and no clients connected. Closing connection.')
+        socketio.disconnect()
+
     
 @app.route('/')
 def index():
@@ -36,6 +57,7 @@ def index():
 
 def imu_data_listener(client_socket):
     global latest_imu_data
+    
     while True:
         
         try:
@@ -119,7 +141,8 @@ def gps_data_listener():
 def udp_server():
     # server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    server_socket.bind(('192.168.104.172', 7777))
+    server_socket.bind(('192.168.42.172', 7777))
+    # server_socket.bind(('10.57.5.120', 7777))
     # server_socket.listen(1)
 
     print('TCP server listening on port 7777')
