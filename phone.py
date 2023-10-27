@@ -21,7 +21,7 @@ last_data_time = time.time()
 
 connected_clients = 0  
 
-# cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0)
 
 # def generate():
 #     while True:
@@ -41,13 +41,10 @@ connected_clients = 0
 #         yield (b'--frame\r\n'
 #                b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
 
-# @socketio.on('request_video_feed')
-# def handle_request_video_feed():
-#     ret, frame = cap.read()
-#     _, jpeg = cv2.imencode('.jpg', frame)
-#     # Encode the JPEG frame as base64 and send it to the client
-#     socketio.emit('video_feed', base64.b64encode(jpeg.tobytes()).decode('utf-8'))
-
+@socketio.on('webcam_stream')
+def handle_webcam_stream(data):
+    # Broadcast the webcam stream to all connected clients
+    socketio.emit('webcam_stream', data, broadcast=True)
 
 @socketio.on('connect')
 def handle_connect():
@@ -61,6 +58,15 @@ def handle_disconnect():
     connected_clients -= 1
     print(f'Client disconnected. Total connected clients: {connected_clients}')
 
+@socketio.on('gps_data')
+def handle_gps_data(data):
+    global latest_gps_data
+    latest_gps_data = {
+        'latitude': data.get('latitude', 0),
+        'longitude': data.get('longitude', 0),
+        'altitude': data.get('altitude', 0),
+    }
+    socketio.emit('gps_data', latest_gps_data)
 
 @socketio.on('request_imu_data')
 def handle_request_imu_data():

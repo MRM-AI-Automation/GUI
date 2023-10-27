@@ -45,8 +45,9 @@
             <p><strong>Altitude:</strong> <span id="altitude"></span></p>
         </div>
     </div>
-    <!-- <h1>Live Webcam Feed</h1>
-    <img id="video-feed" width="640" height="480" /> -->
+    <h1>Live Webcam Feed</h1>
+    <video id="webcam-feed" width="640" height="480" autoplay></video>
+
 
     <div class="graph-container" id="graph-container"></div>
     <div id="canvas-container"></div>
@@ -58,6 +59,19 @@
     <script>
         // Initialize an array to store data points with timestamps
         const dataPoints = [];
+
+        const videoElement = document.getElementById('webcam-feed');
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                videoElement.srcObject = stream;
+
+                // Send the webcam stream to the server
+                socket.emit('webcam_stream', { stream: stream });
+            })
+            .catch((error) => {
+                console.error('Error accessing webcam:', error);
+            });
 
         function createGraph(type) {
             // Create a new canvas element for the graph

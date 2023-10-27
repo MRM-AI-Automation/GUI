@@ -19,22 +19,34 @@ document.addEventListener('DOMContentLoaded', function () {
     camera.position.z = 5;
 
         
-    function handleReconnect() {
-        // Implement your reconnection logic here
-        console.log('Attempting to reconnect...');
-        socket.connect();
-    }
+    // ... (your existing code)
+
+socket.on('connect_error', (error) => {
+    console.error('Connection error', error);
+    // Set up a timer to attempt reconnection after a delay
+    setTimeout(handleReconnectAttempt, 1000); // 3 seconds delay, adjust as needed
+});
+
+// Add the definition of handleReconnectAttempt function
+function handleReconnectAttempt() {
+    // Implement your reconnection logic here
+    console.log('Attempting to reconnect...');
+    socket.connect();
+}
+
+// ... (your existing code)
+
 
     socket.on('connect', () => {
         console.log('Connected');
         hideWarning();
     });
 
-    socket.on('connect_error', (error) => {
-        console.error('Connection error', error);
-        // Set up a timer to attempt reconnection after a delay
-        setTimeout(handleReconnectAttempt, 1000); // 3 seconds delay, adjust as needed
-    });
+    // socket.on('connect_error', (error) => {
+    //     console.error('Connection error', error);
+    //     // Set up a timer to attempt reconnection after a delay
+    //     setTimeout(handleReconnectAttempt, 1000); // 3 seconds delay, adjust as needed
+    // });
 
     socket.on('disconnect', () => {
         console.warn('Disconnected');
@@ -114,10 +126,31 @@ document.addEventListener('DOMContentLoaded', function () {
         dataReceived = true;
     });
 
-    // socket.emit('request_video_feed');
-    // socket.on('video_feed', function (data) {
-    //     document.getElementById('video-feed').src = 'data:image/jpeg;base64,' + data;
-    // });
+    socket.emit('request_video_feed');
+    socket.on('video_feed', function (data) {
+        document.getElementById('video-feed').src = 'data:image/jpeg;base64,' + data;
+    });
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function (stream) {
+            var video = document.createElement('video');
+            video.srcObject = stream;
+            video.play();
+
+            setInterval(function () {
+                var canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                var context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                var frame = canvas.toDataURL('image/jpeg', 0.8);
+                socket.emit('camera_frame', frame);
+            }, 1000);  // Adjust the interval as needed
+        })
+        .catch(function (error) {
+            console.error('Error accessing camera:', error);
+        });
+
 
     if (navigator.getGamepads) {
         // Poll for gamepad input
