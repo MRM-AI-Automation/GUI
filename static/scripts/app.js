@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
     camera.position.z = 5;
 
         
+    
     // ... (your existing code)
 
 socket.on('connect_error', (error) => {
@@ -126,31 +127,7 @@ function handleReconnectAttempt() {
         dataReceived = true;
     });
 
-    socket.emit('request_video_feed');
-    socket.on('video_feed', function (data) {
-        document.getElementById('video-feed').src = 'data:image/jpeg;base64,' + data;
-    });
-
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(function (stream) {
-            var video = document.createElement('video');
-            video.srcObject = stream;
-            video.play();
-
-            setInterval(function () {
-                var canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                var context = canvas.getContext('2d');
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                var frame = canvas.toDataURL('image/jpeg', 0.8);
-                socket.emit('camera_frame', frame);
-            }, 1000);  // Adjust the interval as needed
-        })
-        .catch(function (error) {
-            console.error('Error accessing camera:', error);
-        });
-
+    
 
     if (navigator.getGamepads) {
         // Poll for gamepad input

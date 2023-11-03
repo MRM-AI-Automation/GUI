@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joystick Controls</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+
+</head>
+<body>
+    <div id="controls">
+        <div class="button-display"><strong>Y</strong>: Pitch Down</div>
+        <div class="button-display"><strong>A</strong>: Pitch Up</div>
+        <div class="button-display"><strong>B</strong>: Right Roll</div>
+        <div class="button-display"><strong>X</strong>: Left Roll</div>
+        <div class="button-display"><strong>R-Trigger</strong>: Up</div>
+        <div class="button-display"><strong>L-Trigger</strong>: Down</div>
+        <div class="button-display"><strong>R-Joystick</strong>: Left-Right, Front-Back</div>
+        <div class="button-display"><strong>L-Shift</strong>: IK Stop</div>
+        <div class="button-display"><strong>R-Shift</strong>: FK</div>
+    </div>
+
+    <style>
+        #controls {
+            font-family: Arial, sans-serif;
+            font-size: 30px;
+            margin: 20px;
+        }
+    
+        .button-display {
+            margin: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+    
+        .button-display:hover {
+            background-color: #e0e0e0;
+        }
+    
+        .button-label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+    
+        .key-code {
+            color: #555;
+        }
+    </style>
+    
+    
+    <script>
+        const socket = io.connect('http://localhost:5000');
+    
+        function formatDataPacket(gamepad) {
+            return `M${gamepad.axes[0]}X${gamepad.axes[1]}Y${gamepad.axes[2]}P${gamepad.axes[3]}Q${gamepad.buttons[0].value}A${gamepad.buttons[1].value}S${gamepad.buttons[2].value}R${gamepad.buttons[3].value}D${gamepad.buttons[4].value}E`;
+        }
+    
+        function startGamepadListener() {
+            setInterval(function () {
+                const gamepads = navigator.getGamepads();
+                for (const gamepad of gamepads) {
+                    if (gamepad) {
+                        const dataPacket = formatDataPacket(gamepad);
+                        socket.emit('gamepad_event', dataPacket);
+                    }
+                }
+            }, 100); // Adjust the interval as needed
+        }
+    
+        function connectGamepad() {
+            const gamepads = navigator.getGamepads();
+            for (const gamepad of gamepads) {
+                if (gamepad) {
+                    console.log("Gamepad connected:", gamepad);
+                    startGamepadListener();
+                    break;
+                }
+            }
+        }
+        
+        window.addEventListener("gamepadconnected", function(e) {
+            console.log("Gamepad connected:", e.gamepad);
+        }); 
+        window.addEventListener('DOMContentLoaded', function () {
+            connectGamepad();
+    
+            window.addEventListener('gamepadconnected', function (event) {
+                console.log("Gamepad connected:", event.gamepad);
+                startGamepadListener();
+            });
+    
+            window.addEventListener('gamepaddisconnected', function (event) {
+                console.log("Gamepad disconnected:", event.gamepad);
+            });
+        });
+    </script>
+</body>
+</html>

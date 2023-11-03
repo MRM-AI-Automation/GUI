@@ -46,7 +46,9 @@
         </div>
     </div>
     <h1>Live Webcam Feed</h1>
-    <video id="webcam-feed" width="640" height="480" autoplay></video>
+    <video id="video-feed" width="640" height="480" autoplay></video>
+
+    <button id="captureButton" onclick="saveData()">Capture</button>
 
 
     <div class="graph-container" id="graph-container"></div>
@@ -54,24 +56,90 @@
 
     <div id="warning" style="display: none; color: red; font-weight: bold; margin-top: 10px;"></div>
 
-    <!-- ... (your existing HTML) ... -->
 
     <script>
         // Initialize an array to store data points with timestamps
         const dataPoints = [];
 
-        const videoElement = document.getElementById('webcam-feed');
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('gps_data', function (data) {
+            document.getElementById('latitude').innerText = data.latitude;
+            document.getElementById('longitude').innerText = data.longitude;
+            document.getElementById('altitude').innerText = data.altitude;
+        });
+
+        const videoElement = document.getElementById('video-feed');
+
+
+        socket.emit('request_video_feed');
+        socket.on('video_feed', function (data) {
+            document.getElementById('video-feed').src = 'data:image/jpeg;base64,' + data;
+        });
+
+        // var video = document.createElement('video');
 
         navigator.mediaDevices.getUserMedia({ video: true })
-            .then((stream) => {
+            .then(function (stream) {
+                // var video = document.createElement('video')
                 videoElement.srcObject = stream;
+                videoElement.play();
 
-                // Send the webcam stream to the server
-                socket.emit('webcam_stream', { stream: stream });
+                // setInterval(function () {
+                //     var canvas = document.createElement('canvas');
+                //     canvas.width = video.videoWidth;
+                //     canvas.height = video.videoHeight;
+                //     var context = canvas.getContext('2d');
+                //     context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                //     var frame = canvas.toDataURL('image/jpeg', 0.8);
+                //     socket.emit('camera_frame', frame);
+                // }, 1000);  // Adjust the interval as needed
             })
-            .catch((error) => {
-                console.error('Error accessing webcam:', error);
+            .catch(function (error) {
+                console.error('Error accessing camera:', error);
             });
+
+
+
+function saveData() {
+    // Get the current video frame as an image
+    const canvas = document.createElement('canvas');
+    canvas.width = videoElement.videoWidth;
+    canvas.height = videoElement.videoHeight;
+    const context = canvas.getContext('2d');
+    context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+    const frame = canvas.toDataURL('image/jpeg', 0.8);
+
+    // Get the current sensor data
+    const imuData = {
+        linear_acceleration: {
+            x: parseFloat(document.getElementById('linear-acceleration-x').innerText),
+            y: parseFloat(document.getElementById('linear-acceleration-y').innerText),
+            z: parseFloat(document.getElementById('linear-acceleration-z').innerText),
+        },
+        angular_velocity: {
+            x: parseFloat(document.getElementById('angular-velocity-x').innerText),
+            y: parseFloat(document.getElementById('angular-velocity-y').innerText),
+            z: parseFloat(document.getElementById('angular-velocity-z').innerText),
+        },
+        orientation: {
+            x: parseFloat(document.getElementById('orientation-x').innerText),
+            y: parseFloat(document.getElementById('orientation-y').innerText),
+            z: parseFloat(document.getElementById('orientation-z').innerText),
+        },
+    };
+
+    // Get the current GPS data
+    const gpsData = {
+        latitude: parseFloat(document.getElementById('latitude').innerText),
+        longitude: parseFloat(document.getElementById('longitude').innerText),
+        altitude: parseFloat(document.getElementById('altitude').innerText),
+    };
+    console.log({frame, imuData, gpsData});
+    // Emit a socket event to save the image and sensor data
+    socket.emit('save_data', { frame, imuData, gpsData });
+}
+
 
         function createGraph(type) {
             // Create a new canvas element for the graph

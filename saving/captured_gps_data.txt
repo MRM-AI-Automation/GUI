@@ -1,0 +1,14 @@
+{"latitude": null, "longitude": null, "altitude": null}
+{"latitude": null, "longitude": null, "altitude": null}
+{"latitude": null, "longitude": null, "altitude": null}
+{"latitude": null, "longitude": null, "altitude": null}
+{"latitude": null, "longitude": null, "altitude": null}
+{"latitude": null, "longitude": null, "altitude": null}
+{"latitude": null, "longitude": null, "altitude": null}
+{"latitude": null, "longitude": null, "altitude": null}
+{"latitude": null, "longitude": null, "altitude": null}
+{"latitude": null, "longitude": null, "altitude": null}
+{"latitude": null, "longitude": null, "altitude": null}
+{"latitude": null, "longitude": null, "altitude": null}
+{"latitude": null, "longitude": null, "altitude": null}
+{"latitude": null, "longitude": null, "altitude": null}

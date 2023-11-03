@@ -9,6 +9,7 @@ from sensor_msgs.msg import NavSatFix
 import time
 import cv2
 import base64
+import json
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", ping_timeout=5, ping_interval=2, reconnection=True, reconnection_attempts=3, reconnection_delay=1000, reconnection_timeout=5000)
@@ -21,7 +22,7 @@ last_data_time = time.time()
 
 connected_clients = 0  
 
-cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture(1)
 
 # def generate():
 #     while True:
@@ -41,10 +42,33 @@ cap = cv2.VideoCapture(0)
 #         yield (b'--frame\r\n'
 #                b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
 
-@socketio.on('webcam_stream')
+@socketio.on('save_data')
+def handle_save_data(data):
+    frame = data.get('frame', '')
+    imu_data = data.get('imuData', {})
+    gps_data = data.get('gpsData', {})
+
+    save_image(frame, 'saving/captured_image.jpg')
+
+    save_to_file('saving/captured_imu_data.txt', json.dumps(imu_data))
+    save_to_file('saving/captured_gps_data.txt', json.dumps(gps_data))
+
+def save_image(data_url, filename):
+    # Extract the base64 encoded image data
+    _, encoded = data_url.split(',', 1)
+
+    # Decode and save the image
+    with open(filename, 'wb') as file:
+        file.write(base64.b64decode(encoded))
+
+def save_to_file(filename, data):
+    with open(filename, 'a') as file:
+        file.write(data + '\n')
+
+@socketio.on('video_stream')
 def handle_webcam_stream(data):
     # Broadcast the webcam stream to all connected clients
-    socketio.emit('webcam_stream', data, broadcast=True)
+    socketio.emit('video_stream', data, broadcast=True)
 
 @socketio.on('connect')
 def handle_connect():

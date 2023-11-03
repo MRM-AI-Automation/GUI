@@ -1,0 +1,14 @@
+{"linear_acceleration": {"x": -0.4756422, "y": -0.5117419, "z": 0.33600426}, "angular_velocity": {"x": -0.22128594, "y": 0.1249983, "z": -0.04184427}, "orientation": {"x": 114.835945, "y": -24.748642, "z": -19.57589}}
+{"linear_acceleration": {"x": -0.026879549, "y": -0.15400982, "z": 0.5463295}, "angular_velocity": {"x": -0.14309518, "y": 0.11033753, "z": -0.028405234}, "orientation": {"x": 102.380745, "y": -21.742815, "z": -12.18102}}
+{"linear_acceleration": {"x": 0.30369353, "y": -0.2608807, "z": -0.4348073}, "angular_velocity": {"x": 0.051159963, "y": 0.0828486, "z": -0.10415252}, "orientation": {"x": 116.924545, "y": -22.23517, "z": -21.69971}}
+{"linear_acceleration": {"x": null, "y": null, "z": null}, "angular_velocity": {"x": null, "y": null, "z": null}, "orientation": {"x": null, "y": null, "z": null}}
+{"linear_acceleration": {"x": null, "y": null, "z": null}, "angular_velocity": {"x": null, "y": null, "z": null}, "orientation": {"x": null, "y": null, "z": null}}
+{"linear_acceleration": {"x": null, "y": null, "z": null}, "angular_velocity": {"x": null, "y": null, "z": null}, "orientation": {"x": null, "y": null, "z": null}}
+{"linear_acceleration": {"x": 0.017640352, "y": -0.18858051, "z": -0.13004398}, "angular_velocity": {"x": -0.058184914, "y": -0.2842814, "z": 0.043066}, "orientation": {"x": 119.35156, "y": -19.358978, "z": -22.219784}}
+{"linear_acceleration": {"x": -0.13967443, "y": 0.011799693, "z": -0.11820316}, "angular_velocity": {"x": -0.086132, "y": 0.08124508, "z": 0.04100433}, "orientation": {"x": 7.272856, "y": -9.273669, "z": -17.634827}}
+{"linear_acceleration": {"x": -0.9180131, "y": 0.5760672, "z": 0.45302677}, "angular_velocity": {"x": 0.081855945, "y": -1.106277, "z": 0.10209085}, "orientation": {"x": 342.0971, "y": -12.068431, "z": -26.58731}}
+{"linear_acceleration": {"x": -0.9180131, "y": 0.5760672, "z": 0.45302677}, "angular_velocity": {"x": 0.081855945, "y": -1.106277, "z": 0.10209085}, "orientation": {"x": 342.0971, "y": -12.068431, "z": -26.58731}}
+{"linear_acceleration": {"x": null, "y": null, "z": null}, "angular_velocity": {"x": null, "y": null, "z": null}, "orientation": {"x": null, "y": null, "z": null}}
+{"linear_acceleration": {"x": 0.08857107, "y": 0.16482687, "z": -0.92095613}, "angular_velocity": {"x": -0.7826711, "y": 0.020387627, "z": -0.012980887}, "orientation": {"x": 40.50043, "y": -19.009302, "z": 27.380411}}
+{"linear_acceleration": {"x": null, "y": null, "z": null}, "angular_velocity": {"x": null, "y": null, "z": null}, "orientation": {"x": null, "y": null, "z": null}}
+{"linear_acceleration": {"x": -0.043740667, "y": -0.14768362, "z": -0.011713028}, "angular_velocity": {"x": 0.001985312, "y": 0.0065668016, "z": -0.0021380284}, "orientation": {"x": 267.89374, "y": -2.8223412, "z": -0.1502843}}
