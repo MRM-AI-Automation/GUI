@@ -129,35 +129,35 @@ function handleReconnectAttempt() {
 
     
 
-    if (navigator.getGamepads) {
-        // Poll for gamepad input
-        function pollGamepad() {
-            var gamepads = navigator.getGamepads();
+    // if (navigator.getGamepads) {
+    //     // Poll for gamepad input
+    //     function pollGamepad() {
+    //         var gamepads = navigator.getGamepads();
 
-            // Assuming only one controller is connected
-            var controller = gamepads[0];
+    //         // Assuming only one controller is connected
+    //         var controller = gamepads[0];
 
-            // Check for button presses, analog stick values, etc.
-            if (controller) {
-                // Process controller inputs and send to the server
-                var controllerInputs = {
-                    'buttonA': controller.buttons[0].pressed,
-                    'buttonB': controller.buttons[1].pressed,
-                    'joystickX': controller.axes[0],
-                    'joystickY': controller.axes[1]
-                    // Add more inputs as needed
-                };
+    //         // Check for button presses, analog stick values, etc.
+    //         if (controller) {
+    //             // Process controller inputs and send to the server
+    //             var controllerInputs = {
+    //                 'buttonA': controller.buttons[0].pressed,
+    //                 'buttonB': controller.buttons[1].pressed,
+    //                 'joystickX': controller.axes[0],
+    //                 'joystickY': controller.axes[1]
+    //                 // Add more inputs as needed
+    //             };
 
-                // Send the controller inputs to the server
-                socket.emit('controller_inputs', controllerInputs);
-            }
+    //             // Send the controller inputs to the server
+    //             socket.emit('controller_inputs', controllerInputs);
+    //         }
 
-            // Poll again in the next animation frame
-            requestAnimationFrame(pollGamepad);
-        }
+    //         // Poll again in the next animation frame
+    //         requestAnimationFrame(pollGamepad);
+    //     }
 
-        // Start polling for gamepad input
-        pollGamepad();
-    }
+    //     // Start polling for gamepad input
+    //     pollGamepad();
+    // }
     
 });

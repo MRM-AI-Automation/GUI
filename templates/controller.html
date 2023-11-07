@@ -54,10 +54,20 @@
     
     
     <script>
+        //0:L-X 1:L-Y 2:L2 3:R-X 4:R-Y 5:R2 6:?? 7:?? Back buttons?
+        //0:A 1:B 2:X 3:Y 4:L1 5:R1 6:Select 7:Menu 8:Xbox 9:L3 10:R3
         const socket = io.connect('http://localhost:5000');
-    
+        var aintconnected = false;
+        if(aintconnected){
+                const dataPacket = 'M0X0Y0P0Q0A0S0R0D0E';
+                socket.emit('gamepad_event', dataPacket);
+            }    
+        //M{Gear}X{left_joystick_x}Y{left_joystick_y}P{right_joystick_x}Q{right_joystick_y}A{A}S{trigger}R{resetValue}D{driveMode}E"
         function formatDataPacket(gamepad) {
-            return `M${gamepad.axes[0]}X${gamepad.axes[1]}Y${gamepad.axes[2]}P${gamepad.axes[3]}Q${gamepad.buttons[0].value}A${gamepad.buttons[1].value}S${gamepad.buttons[2].value}R${gamepad.buttons[3].value}D${gamepad.buttons[4].value}E`;
+            // return `Zero${gamepad.buttons[0].value} One${gamepad.buttons[1].value} Two${gamepad.buttons[2].value} Three${gamepad.buttons[3].value} Four${gamepad.buttons[4].value} Five${gamepad.buttons[5].value} Six${gamepad.buttons[6].value} Seven${gamepad.buttons[7].value} Eight${gamepad.buttons[8].value} Nine${gamepad.buttons[9].value} Ten${gamepad.buttons[10].value} Twelve${gamepad.buttons[12].value} Thirteen${gamepad.buttons[13].value} Fourteen${gamepad.buttons[14]} Fifteen${gamepad.buttons[15]}`
+            // return `M${gamepad.axes[0]}X${gamepad.axes[1]}Y${gamepad.axes[2]}P${gamepad.axes[3]}Q${gamepad.buttons[0].value}A${gamepad.buttons[1].value}S${gamepad.buttons[2].value}R${gamepad.buttons[3].value}D${gamepad.buttons[4].value}E${gamepad.buttons[5].value}`;
+            // return `Zero${gamepad.axes[0]} One${gamepad.axes[1]} Two${gamepad.axes[2]} Three${gamepad.axes[3]} Four${gamepad.axes[4]} Five${gamepad.axes[5]} Six${gamepad.axes[6]} Seven${gamepad.axes[7]}`;
+            return `M1${gamepad.buttons[4].value} M2${gamepad.buttons[5].value} X1${gamepad.axes[0]} Y1${gamepad.axes[1]} P1${gamepad.axes[3]} Q1${gamepad.axes[4]} A1${gamepad.buttons[0].value} A2${gamepad.buttons[1].value} A3${gamepad.buttons[2].value} A4${gamepad.buttons[3].value} A5${gamepad.axes[6]} A6${gamepad.axes[7]} S1${gamepad.axes[2]} S2${gamepad.axes[5]} R1${gamepad.axes[7]} A1${A} D1${driveMode}`;
         }
     
         function startGamepadListener() {
@@ -76,16 +86,16 @@
             const gamepads = navigator.getGamepads();
             for (const gamepad of gamepads) {
                 if (gamepad) {
-                    console.log("Gamepad connected:", gamepad);
+                    console.log ("Gamepad connected:", gamepad);
                     startGamepadListener();
                     break;
                 }
             }
         }
-        
-        window.addEventListener("gamepadconnected", function(e) {
-            console.log("Gamepad connected:", e.gamepad);
-        }); 
+
+        // window.addEventListener("gamepadconnected", function(e) {
+        //      console.log("Gamepad connected:", e.gamepad);
+        // }); 
         window.addEventListener('DOMContentLoaded', function () {
             connectGamepad();
     
@@ -94,10 +104,80 @@
                 startGamepadListener();
             });
     
+            
             window.addEventListener('gamepaddisconnected', function (event) {
+                aintconnected = true;
+                const dataPacket = 'M0X0Y0P0Q0A0S0R0D0E';
+                socket.emit('gamepad_event', dataPacket);
                 console.log("Gamepad disconnected:", event.gamepad);
             });
         });
+
+    var driveMode = 0;
+    var A = 0;
+    $(document).on('keydown', function (event) {
+        handleKeyDown(event.which);
+    });
+
+    $(document).on('keyup', function (event) {
+        handleKeyUp(event.which);
+    });
+
+    function handleKeyDown(keyCode) {
+        switch (keyCode) {
+            case 16: // Left Shift
+                if (driveMode == 0){
+                    driveMode = 1;
+                }
+                else   
+                    driveMode = 0;
+                break;
+            case 17: // Right Shift
+                if(driveMode == 0 || driveMode == 1)
+                    driveMode = 2;
+                else 
+                    driveMode = 0;
+                break;
+            case 49: // Keyboard 1
+                // Handle keyboard 1 
+                A = 8;
+                break;
+            case 50: // Keyboard 2
+                // Handle keyboard 2 press
+                A = 9;
+                break;
+            case 51: // Keyboard 3
+                // Handle keyboard 3 press
+                A = 0;
+                break;
+            // Add more cases for other keys as needed
+        }
+    }
+
+    function handleKeyUp(keyCode) {
+        switch (keyCode) {
+            case 16: // Left Shift
+                // Handle left shift release
+
+                break;
+            case 17: // Right Shift
+                // Handle right shift release
+                break;
+            case 49: // Keyboard 1
+                // Handle keyboard 1 release
+                A = 0;
+                break;
+            case 50: // Keyboard 2
+                // Handle keyboard 2 release
+                A = 0;
+                break;
+            case 51: // Keyboard 3
+                // Handle keyboard 3 release
+                A = 0;
+                break;
+            // Add more cases for other keys as needed
+        }
+    }
     </script>
 </body>
 </html>

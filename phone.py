@@ -183,21 +183,21 @@ def imu_data_listener(client_socket):
             break
 
 
-def gps_data_listener():
-    global latest_gps_data
+# def gps_data_listener():
+#     global latest_gps_data
     
-    def callback(msg):
-        print(msg)
-        global latest_gps_data
-        latest_gps_data = {
-            'latitude': msg.latitude,
-            'longitude': msg.longitude,
-            'altitude': msg.altitude,
-        }
-        socketio.emit('gps_data', latest_gps_data)
+#     def callback(msg):
+#         print(msg)
+#         global latest_gps_data
+#         latest_gps_data = {
+#             'latitude': msg.latitude,
+#             'longitude': msg.longitude,
+#             'altitude': msg.altitude,
+#         }
+#         socketio.emit('gps_data', latest_gps_data)
 
-    rospy.Subscriber('/gps/fix', NavSatFix, callback)
-    rospy.spin()
+#     rospy.Subscriber('/gps/fix', NavSatFix, callback)
+#     rospy.spin()
 
 def udp_server():
     # server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -217,12 +217,12 @@ def udp_server():
 
 if __name__ == '__main__':
     #multithreadin
-    rospy.init_node('gps_listener', anonymous=True)
+    # rospy.init_node('gps_listener', anonymous=True)
     
     tcp_thread = threading.Thread(target=udp_server)
     tcp_thread.start()
 
-    gps_thread = threading.Thread(target=gps_data_listener)
-    gps_thread.start()
+    # gps_thread = threading.Thread(target=gps_data_listener)
+    # gps_thread.start()
 
     socketio.run(app, debug=False)
