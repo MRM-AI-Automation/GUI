@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/science.css') }}">
+</head>
+<body>
+    <h1>Sensor Dashboard</h1>
+
+    <div id="sensorData">
+        <div class="sensor-section" id="BME">
+            <h2>BME 688</h2>
+            <div class="data-block">Atmospheric temperature: <span id="bmeTemperature">0</span> °C</div>
+            <div class="data-block">Atmospheric pressure: <span id="bmePressure">0</span> Pa</div>
+            <div class="data-block">Humidity: <span id="bmeHumidity">0</span> %</div>
+        </div>
+
+        <div class="sensor-section" id="MQ-4">
+            <h2>MQ-4</h2>
+            <div class="data-block">Methane concentration: <span id="mqMethane">0</span></div>
+        </div>
+
+        <div class="sensor-section" id="SGP30">
+            <h2>SGP30</h2>
+            <div class="data-block">TVOC concentration: <span id="sgpTVOC">0</span></div>
+            <div class="data-block">CO2 concentration: <span id="sgpCO2">0</span></div>
+        </div>
+
+        <div class="sensor-section" id="ZE03">
+            <h2>ZE03</h2>
+            <div class="data-block">CO concentration: <span id="zeCO">0</span></div>
+            <div class="data-block">O2 concentration: <span id="zeO2">0</span></div>
+            <div class="data-block">NH3 concentration: <span id="zeNH3">0</span></div>
+            <div class="data-block">H2S concentration: <span id="zeH2S">0</span></div>
+            <div class="data-block">NO2 concentration: <span id="zeNO2">0</span></div>
+            <div class="data-block">SO2 concentration: <span id="zeSO2">0</span></div>
+            <div class="data-block">O3 concentration: <span id="zeO3">0</span></div>
+            <div class="data-block">Cl2 Concentration: <span id="zeCL2">0</span></div>
+            <!-- Add other ZE03 data here -->
+        </div>
+
+        <div class="sensor-section" id="AS726x">
+            <h2>AS726x</h2>
+            <div class="data-block">Spectral data: <span id="asSpectral">0</span></div>
+        </div>
+
+        <div class="sensor-section" id="Carson">
+            <h2>Carson</h2>
+            <div class="data-block">Camera feed: <span id="carsonCamera">0</span></div>
+        </div>
+
+        <div class="sensor-section" id="SoilProbe">
+            <h2>Soil Probe</h2>
+            <div class="data-block">Temperature: <span id="soilTemperature">0</span> °C</div>
+            <div class="data-block">Moisture: <span id="soilMoisture">0</span> %</div>
+            <div class="data-block">pH: <span id="soilPH">0</span></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+    <script>
+        // Connect to the Flask SocketIO server
+        const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        // Listen for updates from the server
+        socket.on('sensor_data', function(data) {
+            updateSensorData(data);
+        });
+
+        function updateSensorData(data) {
+            // Update the HTML to display sensor data
+            document.getElementById('bmeTemperature').innerText = data.bme688.temperature;
+            document.getElementById('bmePressure').innerText = data.bme688.pressure;
+            document.getElementById('bmeHumidity').innerText = data.bme688.humidity;
+            document.getElementById('bmeAltitude').innerText = data.bme688.altitude;
+
+            document.getElementById('mqMethane').innerText = data.mq4.methane;
+
+            document.getElementById('sgpTVOC').innerText = data.sgp30.tvoc;
+            document.getElementById('sgpCO2').innerText = data.sgp30.co2;
+
+            document.getElementById('zeCO').innerText = data.ze03.co;
+            document.getElementById('zeO2').innerText = data.ze03.o2;
+            document.getElementById('zeNH3').innerText = data.ze03.nh3;
+            document.getElementById('zeH2S').innerText = data.ze03.h2s;
+            document.getElementById('zeNO2').innerText = data.ze03.no2;
+            document.getElementById('zeSO2').innerText = data.ze03.so2;
+            document.getElementById('zeO3').innerText = data.ze03.o3;
+            document.getElementById('zeCL2').innerText = data.ze03.cl2;
+            // Update other ZE03 data here
+
+            // document.getElementById('asSpectral').innerText = data.as726x.spectral;
+
+            // document.getElementById('carsonCamera').innerText = data.carson.camera;
+
+            document.getElementById('soilTemperature').innerText = data.soilprobe.temperature;
+            document.getElementById('soilMoisture').innerText = data.soilprobe.moisture;
+            document.getElementById('soilPH').innerText = data.soilprobe.pH;
+        }
+    </script>
+</body>
+</html>

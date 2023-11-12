@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    font-size: 36px;
+    color: #333;
+}
+
+#sensorData {
+    margin: 20px;
+    padding: 1em;
+    display: flex;
+    flex-wrap: wrap;
+    /* justify-content: space-between; */
+    width: 80%;
+    gap: 50px;
+}
+
+.sensor-section {
+    padding: 30px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    text-align: center;
+    width: 40%;
+    color: #fff;
+    background-color: #3498db;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-right: 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    font-size: larger;
+}
+
+/* #video {
+    transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg);
+    -moz-transform:rotateY(180deg);
+    
+} */
+
+.graph-container {
+    width: 80%;
+    margin-top: 20px;
+}
+
+#canvas-container {
+    margin-top: 20px;
+}

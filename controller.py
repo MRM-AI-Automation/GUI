@@ -53,32 +53,34 @@ def handle_gamepad_event(data):
         # print(value)
         variables[key] = float(value) if '.' in value else int(value)
     
+    # print(variables)
     m1_value = int(variables.get('M1', 100))
     m2_value = int(variables.get('M2', 100))
-    m1_pressed = False
-    m2_pressed = False
+    x1_value = map(variables.get('X1',0), -1, 1, -1023-100, 1023+100)
+    y1_value = map(variables.get('Y1',0), -1, 1, -1023, 1023)
+    x2_value = map(variables.get('P1',0), -0.9, 0.9, 10, -10)
+    y2_value = map(variables.get('Q1',0), -0.9, 0.9, -10, 10)
+    A_value = int(variables.get('A1',3))
+    B_value = int(variables.get('A2',0))
+    X_value = int(variables.get('A3',0))
+    Y_value = int(variables.get('A4',0))
+    DpadX_value = int(variables.get('A5',0))
+    DpadY_value = int(variables.get('A6',0))
+    LT_value = map(variables.get('S1',0), -1, 1, 0, 10)
+    RT_value = map(variables.get('S2',0), -1, 1, 0, -10)
+    print(DpadX_value)
+    print(DpadY_value)
+    print(LT_value)
+    print(RT_value)
+    # m1_pressed = False
+    # m2_pressed = False
     
     m1_prev_state = 0
     m2_prev_state = 0
     debounce_time = 0.5
 
-    # if m1_value == 1 and m1_prev_state == 0 and (time.time() - last_m1_press_time) > debounce_time:
-    #     print("M1 is pressed")
-    #     last_m1_press_time = time.time()
-    #     gear -= 1
-
-    # # Implement debouncing for M2
-    # if m2_value == 1 and m2_prev_state == 0 and (time.time() - last_m2_press_time) > debounce_time:
-    #     print("M2 is pressed")
-    #     last_m2_press_time = time.time()
-    #     gear += 1
-
-    # print(m1_prev_state)
-    # m1_prev_state = m1_value
-    # m2_prev_state = m2_value
-
     if m1_value == 1 and m1_prev_state == 0 and (time.time() - last_m1_press_time) > debounce_time:
-        print("M1 is pressed")
+        # print("M1 is pressed")
         m1_prev_state = m1_value
         m2_prev_state = m2_value
         last_m1_press_time = time.time()
@@ -87,13 +89,13 @@ def handle_gamepad_event(data):
 
     # Implement debouncing for M2
     if m2_value == 1 and m2_prev_state == 0 and (time.time() - last_m2_press_time) > debounce_time:
-        print("M2 is pressed")
+        # print("M2 is pressed")
         m1_prev_state = m1_value
         m2_prev_state = m2_value
         last_m2_press_time = time.time()
-        gear += 1
+        time.sleep(0.2)
 
-    
+        gear += 1
 
     # print(variables)
 
