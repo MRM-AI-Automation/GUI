@@ -45,8 +45,15 @@
             <p><strong>Altitude:</strong> <span id="altitude"></span></p>
         </div>
     </div>
-    <h1>Live Webcam Feed</h1>
-    <video id="video-feed" width="640" height="480" autoplay></video>
+    <!-- <h1>Live Webcam Feed</h1>
+    <video id="webcam-feed" width="640" height="480" autoplay></video>
+
+    <h1>Secondary Webcam Feed</h1>
+    <video id="usb-feed" width="640" height="480" autoplay></video> -->
+
+    <img id="webcam-feed" width="640" height="480" />
+    <img id="usb-feed" width="640" height="480" />
+
 
     <button id="captureButton" onclick="saveData()">Capture</button>
 
@@ -69,35 +76,26 @@
             document.getElementById('altitude').innerText = data.altitude;
         });
 
-        const videoElement = document.getElementById('video-feed');
+        // const videoElementWebcam = document.getElementById('video-feed-webcam');
+        // const videoElementUSB = document.getElementById('video-feed-usb');
 
+        // Request video feeds from both cameras
+        // socket.emit('request_video_feed', { camera: 'webcam' });
+        // socket.emit('request_video_feed', { camera: 'usb' });
 
-        socket.emit('request_video_feed');
-        socket.on('video_feed', function (data) {
-            document.getElementById('video-feed').src = 'data:image/jpeg;base64,' + data;
+        // Update the video elements with received frames
+        socket.on('webcam_feed', function (data) {
+            // console.log("entering that bs js")
+            document.getElementById('webcam-feed').src = 'data:image/jpeg;base64,' + data.frame;
         });
 
-        // var video = document.createElement('video');
+        socket.on('usb_feed', function (data) {
+            // console.log("entering that bs js")
+            document.getElementById('usb-feed').src = 'data:image/jpeg;base64,' + data.frame;
+        });
 
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function (stream) {
-                // var video = document.createElement('video')
-                videoElement.srcObject = stream;
-                videoElement.play();
+// ... Rest of your existing code
 
-                // setInterval(function () {
-                //     var canvas = document.createElement('canvas');
-                //     canvas.width = video.videoWidth;
-                //     canvas.height = video.videoHeight;
-                //     var context = canvas.getContext('2d');
-                //     context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                //     var frame = canvas.toDataURL('image/jpeg', 0.8);
-                //     socket.emit('camera_frame', frame);
-                // }, 1000);  // Adjust the interval as needed
-            })
-            .catch(function (error) {
-                console.error('Error accessing camera:', error);
-            });
 
 
 function saveData() {

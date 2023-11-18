@@ -12,33 +12,34 @@
     <div id="sensorData">
         <div class="sensor-section" id="BME">
             <h2>BME 688</h2>
-            <div class="data-block">Atmospheric temperature: <span id="bmeTemperature">0</span> °C</div>
-            <div class="data-block">Atmospheric pressure: <span id="bmePressure">0</span> Pa</div>
-            <div class="data-block">Humidity: <span id="bmeHumidity">0</span> %</div>
+            <div class="data-block">Atmospheric temperature: <span id="bme688Temperature">0</span> °C</div>
+            <div class="data-block">Atmospheric pressure: <span id="bme688Pressure">0</span> Pa</div>
+            <div class="data-block">Humidity: <span id="bme688Humidity">0</span> %</div>
+            <div class="data-block">Altitude: <span id="bme688Altitude">0</span> </div>
         </div>
 
         <div class="sensor-section" id="MQ-4">
             <h2>MQ-4</h2>
-            <div class="data-block">Methane concentration: <span id="mqMethane">0</span></div>
+            <div class="data-block">Methane concentration: <span id="mq4Methane">0</span></div>
         </div>
 
         <div class="sensor-section" id="SGP30">
             <h2>SGP30</h2>
-            <div class="data-block">TVOC concentration: <span id="sgpTVOC">0</span></div>
-            <div class="data-block">CO2 concentration: <span id="sgpCO2">0</span></div>
+            <div class="data-block">TVOC concentration: <span id="sgp30Tvoc">0</span></div>
+            <div class="data-block">CO2 concentration: <span id="sgp30Co2">0</span></div>
         </div>
 
         <div class="sensor-section" id="ZE03">
             <h2>ZE03</h2>
-            <div class="data-block">CO concentration: <span id="zeCO">0</span></div>
-            <div class="data-block">O2 concentration: <span id="zeO2">0</span></div>
-            <div class="data-block">NH3 concentration: <span id="zeNH3">0</span></div>
-            <div class="data-block">H2S concentration: <span id="zeH2S">0</span></div>
-            <div class="data-block">NO2 concentration: <span id="zeNO2">0</span></div>
-            <div class="data-block">SO2 concentration: <span id="zeSO2">0</span></div>
-            <div class="data-block">O3 concentration: <span id="zeO3">0</span></div>
-            <div class="data-block">Cl2 Concentration: <span id="zeCL2">0</span></div>
-            <!-- Add other ZE03 data here -->
+            <div class="data-block">CO concentration: <span id="ze03Co">0</span></div>
+            <div class="data-block">O2 concentration: <span id="ze03O2">0</span></div>
+            <div class="data-block">NH3 concentration: <span id="ze03Nh3">0</span></div>
+            <div class="data-block">H2S concentration: <span id="ze03H2s">0</span></div>
+            <div class="data-block">NO2 concentration: <span id="ze03No2">0</span></div>
+            <div class="data-block">SO2 concentration: <span id="ze03So2">0</span></div>
+            <div class="data-block">O3 concentration: <span id="ze03O3">0</span></div>
+            <div class="data-block">Cl2 Concentration: <span id="ze03Cl2">0</span></div>
+            <!-- Add other ZE03 data here  -->
         </div>
 
         <div class="sensor-section" id="AS726x">
@@ -53,14 +54,17 @@
 
         <div class="sensor-section" id="SoilProbe">
             <h2>Soil Probe</h2>
-            <div class="data-block">Temperature: <span id="soilTemperature">0</span> °C</div>
-            <div class="data-block">Moisture: <span id="soilMoisture">0</span> %</div>
-            <div class="data-block">pH: <span id="soilPH">0</span></div>
+            <div class="data-block">Temperature: <span id="soilprobeTemperature">0</span> °C</div>
+            <div class="data-block">Moisture: <span id="soilprobeMoisture">0</span> %</div>
+            <div class="data-block">pH: <span id="soilprobePh_value">0</span></div>
         </div>
+
+        <img id="usb-feed" width="640" height="480" />
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
         // Connect to the Flask SocketIO server
         const socket = io.connect('http://' + document.domain + ':' + location.port);
 
@@ -69,36 +73,71 @@
             updateSensorData(data);
         });
 
+        socket.on('usb_feed', function (data) {
+            // console.log("entering that bs js")
+            document.getElementById('usb-feed').src = 'data:image/jpeg;base64,' + data.frame;
+        });
+
         function updateSensorData(data) {
-            // Update the HTML to display sensor data
-            document.getElementById('bmeTemperature').innerText = data.bme688.temperature;
-            document.getElementById('bmePressure').innerText = data.bme688.pressure;
-            document.getElementById('bmeHumidity').innerText = data.bme688.humidity;
-            document.getElementById('bmeAltitude').innerText = data.bme688.altitude;
+        console.log(data);
 
-            document.getElementById('mqMethane').innerText = data.mq4.methane;
+        // Define an array of sensors
+        const sensors = ['bme688', 'mq4', 'sgp30', 'ze03', 'as726x', 'carson', 'soilprobe'];
 
-            document.getElementById('sgpTVOC').innerText = data.sgp30.tvoc;
-            document.getElementById('sgpCO2').innerText = data.sgp30.co2;
+        // sensors.forEach(sensor => {
+        //     // Iterate over sensor properties
+        //     for (const prop in data[sensor]) {
+        //         // Update corresponding HTML element
+        //         const elementId = `${sensor}${prop.charAt(0).toUpperCase() + prop.slice(1)}`;
+        //         const element = document.getElementById(elementId);
+        //         console.log(elementId, element);
+        //         if (element) {
+        //             element.innerText = data[sensor][prop];
+        //         } else {
+        //             console.log(`Element with ID ${elementId} not found.`);
+        //         }
+        //     }
+        // });
 
-            document.getElementById('zeCO').innerText = data.ze03.co;
-            document.getElementById('zeO2').innerText = data.ze03.o2;
-            document.getElementById('zeNH3').innerText = data.ze03.nh3;
-            document.getElementById('zeH2S').innerText = data.ze03.h2s;
-            document.getElementById('zeNO2').innerText = data.ze03.no2;
-            document.getElementById('zeSO2').innerText = data.ze03.so2;
-            document.getElementById('zeO3').innerText = data.ze03.o3;
-            document.getElementById('zeCL2').innerText = data.ze03.cl2;
-            // Update other ZE03 data here
-
-            // document.getElementById('asSpectral').innerText = data.as726x.spectral;
-
-            // document.getElementById('carsonCamera').innerText = data.carson.camera;
-
-            document.getElementById('soilTemperature').innerText = data.soilprobe.temperature;
-            document.getElementById('soilMoisture').innerText = data.soilprobe.moisture;
-            document.getElementById('soilPH').innerText = data.soilprobe.pH;
-        }
+        // Iterate over sensors
+        sensors.forEach(sensor => {
+            // Iterate over sensor properties
+            if (sensor === 'soilprobe') {
+                // Iterate over specific soilprobe properties
+                const soilprobeProps = ['temperature', 'moisture', 'pH'];
+                soilprobeProps.forEach(prop => {
+                    // Update corresponding HTML element
+                    const elementId = `${sensor}${prop.charAt(0).toUpperCase() + prop.slice(1)}`;
+                    const element = document.getElementById(elementId);
+                    console.log(elementId, element);
+                    if (element) {
+                        element.innerText = data[sensor][prop];
+                    } else {
+                        console.log(`Element with ID ${elementId} not found.`);
+                    }
+                    if (data[sensor] && data[sensor][prop] !== undefined) {
+                        element.innerText = data[sensor][prop];
+                    } else {
+                        console.log(`Error: ${sensor}.${prop} is undefined.`);
+                    }
+                });
+            } else {
+                // Iterate over other sensor properties
+                for (const prop in data[sensor]) {
+                    // Update corresponding HTML element
+                    const elementId = `${sensor}${prop.charAt(0).toUpperCase() + prop.slice(1)}`;
+                    const element = document.getElementById(elementId);
+                    console.log(elementId, element);
+                    if (element) {
+                        element.innerText = data[sensor][prop];
+                    } else {
+                        console.log(`Element with ID ${elementId} not found.`);
+                    }
+                }
+            }
+        });
+    }
+    });
     </script>
 </body>
 </html>
