@@ -9,10 +9,20 @@ import threading
 sio = socketio.Client()
 
 # Connect to the Flask app
-sio.connect('http://localhost:5000')
+
+
+@sio.on('connect')
+def on_connect():
+    print('Connected to Flask server')
+
+@sio.on('disconnect')
+def on_disconnect():
+    print('Disconnected from Flask server')
+
 
 def generate_dummy_data():
     while True:
+        # time.sleep(700)
         # Generate dummy data for each sensor
         bme688_data = {
             'temperature': round(random.uniform(31, 35),2),
@@ -54,9 +64,9 @@ def generate_dummy_data():
             'moisture': round(random.uniform(13, 17), 2),
             'ph_value': round(random.uniform(6, 8), 2),
         }
+        # print("HI")
 
-        # Emit dummy data to the Flask app
-        sio.emit('sensor_data', {
+        data = {
             'bme688': bme688_data,
             'mq4': mq4_data,
             'sgp30': sgp30_data,
@@ -64,13 +74,17 @@ def generate_dummy_data():
             'as726x': as726x_data,
             'carson': carson_data,
             'soil_probe': soil_probe_data,
-        })
+        }
+        # Emit dummy data to the Flask app
+        sio.emit('update_data', data)
+        time.sleep(1)
+
 
 # def generate_bme_data():
 #     return {
 #         'temperature': random.uniform(31, 35),
 #         'pressure': random.uniform(999.46, 1054),
-#         'humidity': random.uniform(79.32, 86),
+#         'humidity': random.uni form(79.32, 86),
 #         'altitude': random.uniform(0,115.37),
 #     }
 
@@ -120,14 +134,16 @@ def generate_dummy_data():
 
 
 if __name__ == '__main__':
+    sio.connect('http://localhost:5000')
     # Start a new thread for the dummy data generator
     dummy_data_thread = threading.Thread(target=generate_dummy_data)
     dummy_data_thread.start()
     print("started")
 
+
     # Keep the main script running
     try:
         while True:
-            time.sleep(100)
+            time.sleep(1)
     except KeyboardInterrupt:
         sio.disconnect()

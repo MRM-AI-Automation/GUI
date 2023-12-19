@@ -7,9 +7,9 @@ import base64
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-latest_sensor_data = {}
+latest_sensor_data = {} 
 
-usb_cam = cv2.VideoCapture(2)  # Change the index according to your USB camera
+usb_cam = cv2.VideoCapture(0)  # Change the index according to your USB camera
 def capture_frames(camera, emit_event):
     while True:
         success, frame = camera.read()
@@ -31,7 +31,7 @@ usb_cam_thread.daemon = True
 usb_cam_thread.start()
 
 # Sample data structure, replace this with your actual sensor data
-@socketio.on('sensor_data')
+@socketio.on('sensor_data', namespace='/')
 def handle_sensor_data(data):
     global latest_sensor_data
     latest_sensor_data = data
