@@ -1,0 +1,164 @@
+.left{
+  background-color: #181818;
+  position: absolute;
+  left: 0%;
+  top: 0%;
+  width: 30%;
+  height: 100%;
+
+}
+
+.right{
+  display: inline-block;
+  background-color: #040406;
+  position: absolute;
+  left: 30%;
+  top: 0%;
+  width: 70%;
+  height: 100%;
+}
+
+.header{
+  position: relative;
+  top: -8.5%;
+  left: 40%;
+  width: 60%;
+  color: white;
+  font-size: 300%;
+}
+
+.allinone{
+  border: 2px solid white;
+  border-radius: 10px;
+  position: relative;
+  top: 0%;
+  left: 5%;
+  height: 44.5%;
+  width: 90%;
+}
+
+.mq4{
+  border: 2px solid white;
+  border-radius: 10px;
+  position: relative;
+  width: 20%;
+  top: 5%;
+  left: 5%;
+  height: 15%;
+}
+
+.sgp{
+  border: 2px solid white;
+  border-radius: 10px;
+  position: relative;
+  width: 20%;
+  height: 15%;
+  top: -10.5%;
+  left: 30%;
+}
+
+.microscope{
+  border: 2px solid white;
+  border-radius: 10px;
+  position: relative;
+  left: 55%;
+  top: -26%;
+  width: 40%;
+  height: 45%;  
+}
+
+.bme{
+  border: 2px solid white;
+  border-radius: 10px;
+  position: relative;
+  left: 5%;
+  top: -52.5%;
+  width: 45%;
+  height: 26%;
+}
+
+.spectral{
+  border: 2px solid white;
+  border-radius: 10px;
+  position: relative;
+  width: 65%;
+  height: 44.5%;
+  top: -70%;
+  left: 30%; 
+}
+
+.soil{
+  border: 2px solid white;
+  border-radius: 10px;
+  position: relative;
+  width: 20%;
+  height: 20%;
+  top: -49.8%;
+  left: 5%; 
+}
+
+.subheader{
+  color: white;
+  font-size: 150%;
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid white;
+}
+
+.item{
+  color:white;
+  padding: 20px;
+  padding-bottom: 5px;
+  padding-top: 15px;
+  font-size: 130%;
+}
+
+#one{
+  position: relative;
+  top: 3%;
+  left: 5%;
+  width: 42.5%;
+  height: 5%;
+}
+
+#two{
+  position: relative;
+  top: 3%;
+  left: 10%;
+  width: 42.5%;
+  height: 5%;
+}
+
+#three{
+  position: relative;
+  top: 7%;
+  left: 5%;
+  width: 90%;
+  height: 5%;
+}
+
+#four{
+  position: relative;
+  top: 12%;
+  left: 5%;
+  width: 90%;
+  height: 5%;   
+}
+
+.button{
+  background-color: transparent;
+  border: 1px solid white;
+  border-radius: 5px;
+  color: white;
+}
+
+.stupid{
+  position: relative;
+  width: 15%;
+  left: 7%;
+  top: -88%;
+  color: white;
+  font-size: xx-large;
+  text-align: left;
+}

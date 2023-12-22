@@ -10,10 +10,12 @@ import time
 import cv2
 import base64
 import json
+from threading import Thread
+from flask_cors import CORS
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", ping_timeout=5, ping_interval=2, reconnection=True, reconnection_attempts=3, reconnection_delay=1000, reconnection_timeout=5000)
-
+CORS(app) 
 latest_imu_data = {}
 
 latest_gps_data = {}
@@ -110,10 +112,43 @@ def check_connection():
         print('No data received and no clients connected. Closing connection.')
         socketio.disconnect()
 
+# webcam = cv2.VideoCapture(0)  # Assuming the webcam is at index 0
+# usb_cam = cv2.VideoCapture(2)  # Change the index according to your USB camera
+
+def capture_frames(camera, emit_event):
+    while True:
+        _, frame = camera.read()
+        _, buffer = cv2.imencode('.jpg', frame)
+        frame_bytes = base64.b64encode(buffer.tobytes()).decode('utf-8')
+        socketio.emit(emit_event, {'frame': frame_bytes, 'camera': emit_event})
+
+# Start threads to capture frames from both cameras
+# webcam_thread = Thread(target=capture_frames, args=(webcam, 'webcam_feed'))
+# usb_cam_thread = Thread(target=capture_frames, args=(usb_cam, 'usb_feed'))
+
+# webcam_thread.daemon = True
+# usb_cam_thread.daemon = True
+
+# webcam_thread.start()
+# usb_cam_thread.start()
     
 @app.route('/')
 def index():
+    return render_template('main.html')
+
+@app.route('/science')
+def science():
+    return render_template('test_science.html')
+
+@app.route('/react')
+def react():
     return render_template('index.html')
+
+@socketio.on('update_data')
+def handle_update_data(data):
+    print('Received data:', data)
+    socketio.emit('sensor_data', data)
+
 
 def imu_data_listener(client_socket):
     global latest_imu_data
