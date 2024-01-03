@@ -60,20 +60,50 @@ def handle_gamepad_event(data):
     y1_value = map(variables.get('Y1',0), -1, 1, -1023, 1023)
     x2_value = map(variables.get('P1',0), -0.9, 0.9, 10, -10)
     y2_value = map(variables.get('Q1',0), -0.9, 0.9, -10, 10)
-    A_value = int(variables.get('A1',3))
+    A_value = int(variables.get('A1',0))
     B_value = int(variables.get('A2',0))
     X_value = int(variables.get('A3',0))
     Y_value = int(variables.get('A4',0))
     DpadX_value = int(variables.get('A5',0))
     DpadY_value = int(variables.get('A6',0))
-    LT_value = map(variables.get('S1',0), -1, 1, 0, 10)
-    RT_value = map(variables.get('S2',0), -1, 1, 0, -10)
-    print(DpadX_value)
-    print(DpadY_value)
-    print(LT_value)
-    print(RT_value)
+    LT_value = map(variables.get('S1',0), -1, 1, 0, -10)
+    RT_value = map(variables.get('S2',0), -1, 1, 0, 10)
+    dpad_left = int(variables.get('A5',0))
+    aa_value = int(variables.get('A9',0))
+    D_value = int(variables.get('D1',0))
+    reset_value = int(dpad_left == -1)
+    S_value = 0
+    a_value = 0
+
+    if A_value == 1:
+        a_value = 1
+    elif B_value == 1:
+        a_value = 2
+    elif X_value == 1:
+        a_value = 3
+    elif Y_value == 1:
+        a_value = 4
+    elif DpadY_value == 1:
+        a_value = 5
+    elif DpadY_value == -1:
+        a_value = 6
+    elif DpadX_value == 1:
+        a_value = 7
+    else:
+        a_value = aa_value
+
+    if LT_value < 0:
+        S_value = LT_value
+    elif RT_value > 0:
+        S_value = RT_value
+
+    # print(LT_value)
+    # print(RT_value)
+    # print(reset_value)
+    # print(y1_value)
     # m1_pressed = False
     # m2_pressed = False
+    print(f'M{gear}X{x1_value}Y{y1_value}P{x2_value}Q{y2_value}A{a_value}S{S_value}R{reset_value}D{D_value}E')
     
     m1_prev_state = 0
     m2_prev_state = 0
@@ -101,7 +131,7 @@ def handle_gamepad_event(data):
 
     rover_socket.sendto(data.encode(), (ROVER_HOST, ROVER_PORT))
 
-    print('Received gamepad event:', data)
+    # print('Received gamepad event:', data)
     # print(gear)
 
 if __name__ == '__main__':
