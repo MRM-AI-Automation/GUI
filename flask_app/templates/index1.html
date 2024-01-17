@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMU Data and Visualization</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/main.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='scripts/app.js') }}"></script>
+</head>
+
+<body>
+    <h1>IMU Data and Visualization</h1>
+    <div id="imu-data">
+        <div class="imu-section" id="linear-acceleration" onclick="createGraph('linear-acceleration')">
+            <h3>Linear Acceleration</h3>
+            <p><strong>X:</strong> <span id="linear-acceleration-x"></span></p>
+            <p><strong>Y:</strong> <span id="linear-acceleration-y"></span></p>
+            <p><strong>Z:</strong> <span id="linear-acceleration-z"></span></p>
+        </div>
+
+        <div class="imu-section" id="angular-velocity" onclick="createGraph('angular-velocity')">
+            <h3>Angular Velocity</h3>
+            <p><strong>X:</strong> <span id="angular-velocity-x"></span></p>
+            <p><strong>Y:</strong> <span id="angular-velocity-y"></span></p>
+            <p><strong>Z:</strong> <span id="angular-velocity-z"></span></p>
+        </div>
+
+        <div class="imu-section" id="orientation" onclick="createGraph('orientation')">
+            <h3>Orientation</h3>
+            <p><strong>X:</strong> <span id="orientation-x"></span></p>
+            <p><strong>Y:</strong> <span id="orientation-y"></span></p>
+            <p><strong>Z:</strong> <span id="orientation-z"></span></p>
+        </div>
+        <div id="gps-data" class="imu-section" onclick="createGPSGraph('gps data')">
+            <h3>GPS Data</h3>
+            <p><strong>Latitude:</strong> <span id="latitude"></span></p>
+            <p><strong>Longitude:</strong> <span id="longitude"></span></p>
+            <p><strong>Altitude:</strong> <span id="altitude"></span></p>
+        </div>
+    </div>
+    <h1>Live Webcam Feed</h1>
+    <video id="webcam-feed" width="640" height="480" autoplay></video>
+
+    <button id="captureButton">Capture</button>
+
+
+    <div class="graph-container" id="graph-container"></div>
+    <div id="canvas-container"></div>
+
+    <div id="warning" style="display: none; color: red; font-weight: bold; margin-top: 10px;"></div>
+
+    <!-- ... (your existing HTML) ... -->
+
+    <script>
+        // Initialize an array to store data points with timestamps
+        const dataPoints = [];
+
+        const videoElement = document.getElementById('webcam-feed');
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                videoElement.srcObject = stream;
+
+                // Send the webcam stream to the server
+                socket.emit('webcam_stream', { stream: stream });
+            })
+            .catch((error) => {
+                console.error('Error accessing webcam:', error);
+            });
+
+        function createGraph(type) {
+            // Create a new canvas element for the graph
+            const canvas = document.createElement('canvas');
+            canvas.width = 150; // Set the width as needed
+            canvas.height = 75; // Set the height as needed
+            canvas.style.marginTop = '10px';
+    
+            // Append the canvas to the graph container
+            document.getElementById('graph-container').innerHTML = '';
+            document.getElementById('graph-container').appendChild(canvas);
+    
+            // Initialize the data structure for the last 30 seconds
+            const initData = Array.from({ length: 20 }, () => ({ x: null, y: null, z: null }));
+    
+            // Create a chart using Chart.js
+            const ctx = canvas.getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({ length: 20 }, (_, i) => i + 1), // Labels for the last 30 seconds
+                    datasets: [
+                        {
+                            label: `${type} X`,
+                            data: initData.map(entry => entry.x),
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+                        },
+                        {
+                            label: `${type} Y`,
+                            data: initData.map(entry => entry.y),
+                            backgroundColor: 'rgba(155, 89, 182, 0.2)',
+                            borderColor: 'rgba(155, 89, 182, 1)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(155, 89, 182, 1)',
+                        },
+                        {
+                            label: `${type} Z`,
+                            data: initData.map(entry => entry.z),
+                            backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                            borderColor: 'rgba(46, 204, 113, 1)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(46, 204, 113, 1)',
+                        },
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
+                    }
+                }
+            });
+    
+            // Function to update the chart with new data
+            function updateChart() {
+                // Get the values for the selected type
+                const xValue = parseFloat(document.getElementById(`${type}-x`).innerText);
+                const yValue = parseFloat(document.getElementById(`${type}-y`).innerText);
+                const zValue = parseFloat(document.getElementById(`${type}-z`).innerText);
+    
+                // Update the data structure with the new values
+                const newData = { x: xValue, y: yValue, z: zValue };
+                chart.data.labels.push(chart.data.labels.length + 1);
+                chart.data.datasets[0].data.push(newData.x);
+                chart.data.datasets[1].data.push(newData.y);
+                chart.data.datasets[2].data.push(newData.z);
+
+                // Update the chart
+                chart.update();
+
+                // Check if more than 20 seconds of data is present, and remove the oldest data point
+                if (chart.data.labels.length > 20) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                    chart.data.datasets[1].data.shift();
+                    chart.data.datasets[2].data.shift();
+                }
+    
+                // Update the chart
+                chart.update();
+            }
+    
+            // Set up an interval to update the chart every second
+            setInterval(updateChart, 1000);
+        }
+    
+        function createGPSGraph() {
+            // Create a new canvas element for the graph
+            const canvas = document.createElement('canvas');
+            canvas.width = 150; // Set the width as needed
+            canvas.height = 75; // Set the height as needed
+            canvas.style.marginTop = '10px';
+
+            // Append the canvas to the graph container
+            document.getElementById('graph-container').innerHTML = '';
+            document.getElementById('graph-container').appendChild(canvas);
+
+            // Initialize the data structure for the last 30 seconds
+            const initData = Array.from({ length: 20 }, () => ({ latitude: null, longitude: null, altitude: null }));
+
+            // Create a chart using Chart.js
+            const ctx = canvas.getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({ length: 20 }, (_, i) => i + 1), // Labels for the last 30 seconds
+                    datasets: [
+                        {
+                            label: 'Latitude',
+                            data: initData.map(entry => entry.latitude),
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                            borderColor: 'rgba(52, 152, 219, 1)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+                            yAxisID: 'latitude-axis',
+                        },
+                        {
+                            label: 'Longitude',
+                            data: initData.map(entry => entry.longitude),
+                            backgroundColor: 'rgba(155, 89, 182, 0.2)',
+                            borderColor: 'rgba(155, 89, 182, 1)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(155, 89, 182, 1)',
+                            yAxisID: 'longitude-axis',
+                        },
+                        {
+                            label: 'Altitude',
+                            data: initData.map(entry => entry.altitude),
+                            backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                            borderColor: 'rgba(46, 204, 113, 1)',
+                            borderWidth: 2,
+                            pointRadius: 5,
+                            pointBackgroundColor: 'rgba(46, 204, 113, 1)',
+                            yAxisID: 'altitude-axis',
+                        },
+                    ]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        },
+                        'latitude-axis': {
+                            type: 'linear',
+                            position: 'left',
+                            beginAtZero: true,
+                        },
+                        'longitude-axis': {
+                            type: 'linear',
+                            position: 'left',
+                            beginAtZero: true,
+                        },
+                        'altitude-axis': {
+                            type: 'linear',
+                            position: 'right',
+                            beginAtZero: true,
+                        },
+                    }
+                }
+        });
+
+        // Function to update the chart with new data
+        function updateChart() {
+            // Get the values for latitude, longitude, and altitude
+            const latitude = parseFloat(document.getElementById('latitude').innerText);
+            const longitude = parseFloat(document.getElementById('longitude').innerText);
+            const altitude = parseFloat(document.getElementById('altitude').innerText);
+
+            // Update the data structure with the new values
+            const newData = { latitude, longitude, altitude };
+            chart.data.datasets[0].data.shift();
+            chart.data.datasets[1].data.shift();
+            chart.data.datasets[2].data.shift();
+            chart.data.datasets[0].data.push(newData.latitude);
+            chart.data.datasets[1].data.push(newData.longitude);
+            chart.data.datasets[2].data.push(newData.altitude);
+
+            // Update the chart
+            chart.update();
+        }
+
+        // Set up an interval to update the chart every second
+        setInterval(updateChart, 1000);
+    }
+    </script>
+    
+
+</body>
+
+</html>

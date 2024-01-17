@@ -4,6 +4,15 @@ from flask_cors import CORS
 import socket
 import time
 
+prev_gear = 0
+prev_x1_value = 0
+prev_y1_value = 0
+prev_x2_value = 0
+prev_y2_value = 0
+prev_a_value = 0
+prev_S_value = 0
+prev_reset_value = 0
+prev_D_value = 0
 last_m1_press_time = 0
 last_m2_press_time = 0
 
@@ -18,6 +27,14 @@ ROVER_PORT = 5005
 rover_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 gear = 0
+x1_value = 0
+y1_value = 0
+x2_value = 0
+y2_value = 0
+a_value = 0
+S_value = 0
+reset_value = 0
+D_value = 0
 
 @app.route('/')
 def index():
@@ -32,12 +49,16 @@ def map(value, fromLow, fromHigh, toLow, toHigh):
 
 
 @socketio.on('gamepad_event')
-def handle_gamepad_event(data):
+def handle_gamepad_event(input):
     global gear
     global last_m1_press_time
     global last_m2_press_time
+    global gear, x1_value, y1_value, x2_value, y2_value, a_value, S_value, reset_value, D_value
+    global prev_gear, prev_x1_value, prev_y1_value, prev_x2_value, prev_y2_value
+    global prev_a_value, prev_S_value, prev_reset_value, prev_D_value
+    global last_m1_press_time, last_m2_press_time
 
-    pairs = data.split()
+    pairs = input.split()
 
     # Create a dictionary to store the values
     variables = {}
@@ -54,6 +75,17 @@ def handle_gamepad_event(data):
         variables[key] = float(value) if '.' in value else int(value)
     
     # print(variables)
+        
+    prev_gear = gear
+    prev_x1_value = x1_value
+    prev_y1_value = y1_value
+    prev_x2_value = x2_value
+    prev_y2_value = y2_value
+    prev_a_value = a_value
+    prev_S_value = S_value
+    prev_reset_value = reset_value
+    prev_D_value = D_value
+
     m1_value = int(variables.get('M1', 100))
     m2_value = int(variables.get('M2', 100))
     x1_value = map(variables.get('X1',0), -1, 1, -1023-100, 1023+100)
@@ -97,14 +129,31 @@ def handle_gamepad_event(data):
     elif RT_value > 0:
         S_value = RT_value
 
-    # print(LT_value)
-    # print(RT_value)
-    # print(reset_value)
-    # print(y1_value)
-    # m1_pressed = False
-    # m2_pressed = False
-    print(f'M{gear}X{x1_value}Y{y1_value}P{x2_value}Q{y2_value}A{a_value}S{S_value}R{reset_value}D{D_value}E')
-    
+    # delta_gear = gear - prev_gear
+    # print(delta_gear)
+    # delta_x1_value = x1_value - prev_x1_value
+    # delta_y1_value = y1_value - prev_y1_value
+    # delta_x2_value = x2_value - prev_x2_value
+    # delta_y2_value = y2_value - prev_y2_value
+    # delta_a_value = a_value - prev_a_value
+    # delta_S_value = S_value - prev_S_value
+    # delta_reset_value = reset_value - prev_reset_value
+    # delta_D_value = D_value - prev_D_value
+
+    # print(f'M{delta_gear}X{delta_x1_value}Y{delta_y1_value}P{delta_x2_value}Q{delta_y2_value}A{delta_a_value}S{delta_S_value}R{delta_reset_value}D{delta_D_value}E')
+    # print(f'M{gear}X{x1_value}Y{y1_value}P{x2_value}Q{y2_value}A{a_value}S{S_value}R{reset_value}D{D_value}E')
+    data = "M{gear}X{x1_value}Y{y1_value}P{x2_value}Q{y2_value}A{a_value}S{S_value}R{reset_value}D{D_value}E".format(
+        gear = gear,
+        x1_value = x1_value,
+        y1_value = y1_value,
+        x2_value = x2_value,
+        y2_value = y2_value,
+        a_value = a_value,
+        S_value = S_value,
+        reset_value = reset_value,
+        D_value = D_value
+    )
+
     m1_prev_state = 0
     m2_prev_state = 0
     debounce_time = 0.5
@@ -128,7 +177,7 @@ def handle_gamepad_event(data):
         gear += 1
 
     # print(variables)
-
+    print(data)
     rover_socket.sendto(data.encode(), (ROVER_HOST, ROVER_PORT))
 
     # print('Received gamepad event:', data)

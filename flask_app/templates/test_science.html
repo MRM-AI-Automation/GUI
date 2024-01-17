@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/test_science.css') }}">
+</head>
+
+<body>
+
+<span class="left">
+
+    <img title="37th URC lesgooo" src="{{ url_for('static', filename='mrm2.png') }}" style="width: 30%; position: relative; top: 3%;left:5%;">
+    <div title="7th ERC lesgooo" class="header">Science GUI</div>
+    <div title="This years science sensor which definitely works" class="allinone">
+        <div class="subheader">ZE03: All in one sensor</div>
+        <div id="zeCO" class="item">CO: 0</div>
+        <div id="zeO2" class="item">O2: 0</div>
+        <div id="zeNH3" class="item">NH3: 0</div>
+        <div id="zeH2" class="item">H2S: 0</div>
+        <div id="zeNO2" class="item">NO2</sub>: 0</div>
+        <div id="zeSO2" class="item">SO2: 0</div>
+        <div id="ze03" class="item">O3</sub>: 0</div>
+        <div id="zeCl2" class="item">Cl2: 0</div>
+    </div>
+    <button title="They wanted this to be PINK LMAO yall need to thank me" id="one" class="button">RDO</button>
+    <button title="They wanted this to be PINK LMAO yall need to thank me" id="two" class="button">IDMO</button>
+    <button title="They wanted this to be PINK LMAO yall need to thank me" id="three" class="button">AutEx</button>
+    <button title="They wanted this to be PINK LMAO yall need to thank me" id="four" class="button">Video</button>
+</span>
+<span class="right">
+    <div class="mq4">
+        <div class="subheader">MQ4</div>
+        <div id="mq4ch4" class="item">CH<sub>4</sub>: 0</div>
+    </div>
+    <div class="sgp">
+        <div class="subheader">SGP</div>
+        <div id="tvoc" class="item">tVOC: 0</div>
+        <div id="sgpCO" class="item">CO<sub>2</sub>: 0</div>
+    </div>
+    <div title="This shit still works?" class="microscope">
+        <div class="subheader">Microscope</div>
+    </div>
+    <div title="Last years science sensor which definitely works(doesnt)" class="bme">
+        <div class="subheader">BME688</div>
+        <div id="temp" class="item">Temperature: 0</div>
+        <div id="press" class="item">Pressure: 0</div>
+        <div id="hum" class="item">Humidity: 0</div>
+        <div id="alt" class="item">Altitude: 0</div>
+    </div>
+    <div class="soil">
+        <div class="subheader">Soil Probe</div>
+        <div id="soil_temp" class="item">Temperature: 0</div>
+        <div id="mois" class="item">Moisture: 0</div>
+        <div id="pH" class="item">pH: 0</div>
+    </div>
+    <div title="Could have been a spectrometer but no lmaoooo" class="spectral">
+        <div class="subheader">AS726x</div>
+    </div>
+    <div title="This is of the class 'stupid' in the source code because of how stupid it is" class="stupid">HANS AND LEIA MODULE</div>
+</span>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+<!-- <script src = "{{ url_for('static', filename='scripts/random.js') }}"></script> -->
+<script>
+
+    // document.addEventListener('DOMContentLoaded', function () {
+        const socket = io.connect('http://localhost:5000');
+
+socket.on('connect', function() {
+    console.log('Connected to WebSocket server');
+    // document.getElementById('zeCO').textContent = `AHAHAHA`;
+
+    
+});
+
+socket.on('disconnect', function() {
+    console.log('Disconnected from WebSocket server');
+});
+
+socket.on('sensor_data', function(data) {
+    updateSensorData(data);
+    console.log("HI");
+});
+
+// socket.on('sensor_data', function(data) {
+//         console.log('Received data:', data);
+//         // You can add more console.log statements to check data for each sensor
+//     });
+
+
+function updateSensorData(data) {
+    // Update the HTML to display sensor data
+    document.getElementById('zeCO').innerText = `CO: ${data.ze03.co} ppm`;
+    document.getElementById('zeO2').innerText = `O2: ${data.ze03.o2} %`;
+    document.getElementById('zeNH3').innerText = `NH3: ${data.ze03.nh3} ppm`;
+    document.getElementById('zeH2').innerText = `H2S: ${data.ze03.h2s} ppm`;
+    document.getElementById('zeNO2').innerText = `NO2: ${data.ze03.no2} ppm`;
+    document.getElementById('zeSO2').innerText = `SO2: ${data.ze03.so2} ppm`;
+    document.getElementById('ze03').innerText = `O3: ${data.ze03.o3} ppm`;
+    document.getElementById('zeCl2').innerText = `Cl2: ${data.ze03.cl2} ppm`;
+
+    document.getElementById('temp').innerText = `Temperature: ${data.bme688.temperature} °C`;
+    document.getElementById('press').innerText = `Pressure: ${data.bme688.pressure} Hpa`;
+    document.getElementById('hum').innerText = `Humidity: ${data.bme688.humidity} %`;
+    document.getElementById('alt').innerText = `Altitude: ${data.bme688.altitude} m`;
+
+    document.getElementById('mq4ch4').innerText = `CH4: ${data.mq4.methane} ppm`;
+
+    document.getElementById('tvoc').innerText = `tVOC: ${data.sgp30.tvoc} ppm`;
+    document.getElementById('sgpCO').innerText = `CO: ${data.sgp30.co2} ppm`;
+
+    document.getElementById('soil_temp').textContent = `Temperature: ${data.soil_probe.temperature} °C`;
+    document.getElementById('mois').textContent = `Moisture: ${data.soil_probe.moisture} %`;
+    document.getElementById('pH').textContent = `pH: ${data.soil_probe.ph_value} pH`;
+}
+// });
+</script>
+</body>
