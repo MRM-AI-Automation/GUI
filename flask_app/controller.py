@@ -3,6 +3,7 @@ from flask_socketio import SocketIO
 from flask_cors import CORS 
 import socket
 import time
+import random
 
 prev_gear = 0
 prev_x1_value = 0
@@ -21,7 +22,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")  # Enable CORS for all origin
 
 # Add the CORS middleware to your Flask app
 CORS(app)
-ROVER_HOST = "10.0.0.11"
+ROVER_HOST = "10.0.0.7"
 ROVER_PORT = 5005
 
 rover_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -38,7 +39,7 @@ D_value = 0
 
 @app.route('/')
 def index():
-    return render_template('controller.html')
+    return render_template('bob.html')
 
 def map(value, fromLow, fromHigh, toLow, toHigh):
     # Calculate the scaled value
@@ -90,7 +91,7 @@ def handle_gamepad_event(input):
     m2_value = int(variables.get('M2', 100))
     x1_value = map(variables.get('X1',0), -1, 1, -1023-100, 1023+100)
     y1_value = map(variables.get('Y1',0), -1, 1, -1023, 1023)
-    x2_value = map(variables.get('P1',0), -0.9, 0.9, 10, -10)
+    x2_value = map(variables.get('P1',0), -0.9, 0.9, -10, 10)
     y2_value = map(variables.get('Q1',0), -0.9, 0.9, -10, 10)
     A_value = int(variables.get('A1',0))
     B_value = int(variables.get('A2',0))
@@ -98,7 +99,7 @@ def handle_gamepad_event(input):
     Y_value = int(variables.get('A4',0))
     DpadX_value = int(variables.get('A5',0))
     DpadY_value = int(variables.get('A6',0))
-    LT_value = map(variables.get('S1',0), -1, 1, 0, -10)
+    LT_value = map(variables.get('S1',0), -1, 1, -11, 11)
     RT_value = map(variables.get('S2',0), -1, 1, 0, 10)
     dpad_left = int(variables.get('A5',0))
     aa_value = int(variables.get('A9',0))
@@ -124,10 +125,12 @@ def handle_gamepad_event(input):
     else:
         a_value = aa_value
 
-    if LT_value < 0:
-        S_value = LT_value
-    elif RT_value > 0:
-        S_value = RT_value
+    S_value = LT_value
+
+    # if LT_value < 0:
+    #     S_value = LT_value
+    # elif RT_value > 0:
+    #     S_value = RT_value
 
     # delta_gear = gear - prev_gear
     # print(delta_gear)
@@ -142,7 +145,7 @@ def handle_gamepad_event(input):
 
     # print(f'M{delta_gear}X{delta_x1_value}Y{delta_y1_value}P{delta_x2_value}Q{delta_y2_value}A{delta_a_value}S{delta_S_value}R{delta_reset_value}D{delta_D_value}E')
     # print(f'M{gear}X{x1_value}Y{y1_value}P{x2_value}Q{y2_value}A{a_value}S{S_value}R{reset_value}D{D_value}E')
-    data = "M{gear}X{x1_value}Y{y1_value}P{x2_value}Q{y2_value}A{a_value}S{S_value}R{reset_value}D{D_value}E".format(
+    data = "M{gear}X{x1_value}Y{y1_value}P{y2_value}Q{S_value}A{a_value}S{x2_value}R{reset_value}D{D_value}E".format(
         gear = gear,
         x1_value = x1_value,
         y1_value = y1_value,
@@ -153,6 +156,15 @@ def handle_gamepad_event(input):
         reset_value = reset_value,
         D_value = D_value
     )
+
+    gui_data = {
+        'lat': random.uniform(0, 100),
+        'long': random.uniform(0, 100),
+        'gear': gear,
+        'string': data,
+        'x': x1_value,
+        'y': y1_value,
+    }
 
     m1_prev_state = 0
     m2_prev_state = 0
@@ -184,4 +196,4 @@ def handle_gamepad_event(input):
     # print(gear)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
