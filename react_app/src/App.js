@@ -23,6 +23,7 @@ import Bme from './components/Bme'
 import Soil from './components/Soil'
 import As726x from './components/As726x'
 import CameraFeed from './components/CameraFeed'
+import ScreenshotButton from './components/ScreenshotButton'
 
 // Define the component
 function SensorDashboard() {
@@ -66,63 +67,6 @@ function SensorDashboard() {
   })
   console.log(sensorData)
 
-  const [driveMode, setDriveMode] = useState(0)
-  const [A, setA] = useState(0)
-
-  const handleKeyDown = (event) => {
-    switch (event.keyCode) {
-      case 16: // Shift
-        setDriveMode((prevMode) => (prevMode === 0 ? 1 : 0))
-        break
-      case 17: // Control
-        setDriveMode((prevMode) => (prevMode === 0 || prevMode === 1 ? 2 : 0))
-        break
-      case 49: // Keyboard 1
-        setA(8)
-        break
-      case 50: // Keyboard 2
-        setA(9)
-        break
-      case 51: // Keyboard 3
-        setA(0)
-        break
-      // Add more cases for other keys as needed
-      default:
-        break
-    }
-  }
-
-  const handleKeyUp = (event) => {
-    switch (event.keyCode) {
-      case 16: // Left Shift
-      case 17: // Right Shift
-      case 49: // Keyboard 1
-      case 50: // Keyboard 2
-      case 51: // Keyboard 3
-        setA(0)
-        break
-      // Add more cases for other keys as needed
-      default:
-        break
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown)
-    document.addEventListener('keyup', handleKeyUp)
-  }, [driveMode, A])
-
-  // const [chartData, setChartData] = useState([0, 0, 0, 0, 0, 0])
-
-  // const history = useHistory()
-
-  const openNewTab = () => {
-    // Replace 'https://example.com/new-page' with the URL you want to open in the new tab
-    const urlToOpen = 'https://example.com/new-page'
-
-    // Open the URL in a new tab
-    window.open(urlToOpen, '_blank')
-  }
   const [cameraFrame, setCameraFrame] = useState(null)
   useEffect(() => {
     const socket = io.connect('http://localhost:5000')
@@ -168,6 +112,17 @@ function SensorDashboard() {
       socket.disconnect()
     }
   }, [])
+
+  const saveSensorDataToFile = () => {
+    const socket = io.connect('http://localhost:5000')
+
+    // Emit a custom event to the server when the button is clicked
+    socket.emit('save_sensor_data', sensorData)
+    console.log('Requested')
+
+    // Disconnect the socket after sending the event
+    socket.disconnect()
+  }
 
   // const saveChartImage = (chart) => {
   //   const base64Image = chart.toBase64Image()
@@ -257,8 +212,12 @@ function SensorDashboard() {
         />
         <Button id='one' name='RDO' />
         <Button id='two' name='IDMO' />
-        <Button id='three' name='AutEx' />
-        <Button onClick={openNewTab} id='four' name='Video' />
+        {/* <Button id='three'  name='Save Sensor Data' /> */}
+        <button id='three' onClick={saveSensorDataToFile}>
+          Save Sensor Data
+        </button>
+        {/* <RecordData /> */}
+        <ScreenshotButton />
       </span>
       <span className='right'>
         <Mq4 data={sensorData} />

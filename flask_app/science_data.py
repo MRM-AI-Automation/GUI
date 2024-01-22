@@ -43,129 +43,165 @@ print(f"Connection established with {sender_address}")
 # C104M104O15E420T33.85P1000.36H62.71E
 
 def generate_dummy_data():
-    while True:
-        data3 = connection.recv(1024).decode('utf-8')
-        # data3 ="S676.51,876.66,714.08,858.39,788.23,736.20M0.00T24.44P16.19EC110M110O0F400T33.00P1006.00H67.40DSX"
-        # gps = connection2.recv(1024).decode('utf-8')
-        # print('gps',gps)
-        # C438M438O41F446T33.39P1003.59H62.42DSEX
-        data1, data2 = data3.split('C')
-        # print(data1)
-        # print(data2)
-        try:
-            # if 'S' in data1 and 'M' in data1 and 'T' in data1 and 'P' in data1 and 'E' in data1 and 'M' in data2 and 'O' in data2 and 'F' in data2 and 'T' in data2 and 'P' in data2 and 'H' in data2 and 'O' in data2 and data2.endswith('X'):
-            combine1 = data1[1:-1].replace('M',',').replace('T',',').replace('P',',')
-            spec1,spec2,spec3,spec4,spec5,spec6,moistmeter,temp,pHahaha = combine1.split(',')
-            combine2 = data2[0:-1].replace('M',',').replace('H',',').replace('P',',').replace('T',',').replace('O',',').replace('F',',').replace('D',',')
-            coo, meth, tvoc, co2, temp1, pres, hum, dir= combine2.split(',')
-            print(f"Received data: {combine1}")
-            print(f"Received data: {combine2}")
-            # else:
-            #     print("invalid data")
-        except:
-            continue
+    with open('./saving/science_data.txt', 'w', newline='') as csvfile:
+        # Write the header row with labels
+        header_row = "Temperature\tPressure\tHumidity\tAltitude\tMethane\tTVOC\tCO2\tCO\tO2\tNH3\tH2S\tNO2\tSO2\tO3\tCl2\tAS726x_S1\tAS726x_S2\tAS726x_S3\tAS726x_S4\tAS726x_S5\tAS726x_S6\tCarson_Value\tSoil_Temperature\tSoil_Moisture\tSoil_pH\n"
+        csvfile.write(header_row)
 
-        # # time.sleep(700)
-        # # Generate dummy data for each sensor
-        # bme688_data = {
-        #     'temperature': round(random.uniform(31, 35),2),
-        #     'pressure': round(random.uniform(999.46, 1054),2),
-        #     'humidity': round(random.uniform(79.32, 86),2),
-        #     'altitude': round(random.uniform(0,115.37),2),
-        # }
+        while True:
+            data3 = connection.recv(1024).decode('utf-8')
+            # data3 ="S676.51,876.66,714.08,858.39,788.23,736.20M0.00T24.44P16.19EC110M110O0F400T33.00P1006.00H67.40DSX"
+            # gps = connection2.recv(1024).decode('utf-8')
+            # print('gps',gps)
+            # C438M438O41F446T33.39P1003.59H62.42DSEX
+            data1, data2 = data3.split('C')
+            # print(data1)
+            # print(data2)
+            try:
+                # if 'S' in data1 and 'M' in data1 and 'T' in data1 and 'P' in data1 and 'E' in data1 and 'M' in data2 and 'O' in data2 and 'F' in data2 and 'T' in data2 and 'P' in data2 and 'H' in data2 and 'O' in data2 and data2.endswith('X'):
+                combine1 = data1[1:-1].replace('M',',').replace('T',',').replace('P',',')
+                spec1,spec2,spec3,spec4,spec5,spec6,moistmeter,temp,pHahaha = combine1.split(',')
+                combine2 = data2[0:-1].replace('M',',').replace('H',',').replace('P',',').replace('T',',').replace('O',',').replace('F',',').replace('D',',')
+                coo, meth, tvoc, co2, temp1, pres, hum, dir= combine2.split(',')
+                print(f"Received data: {combine1}")
+                print(f"Received data: {combine2}")
+                # else:
+                #     print("invalid data")
+            except:
+                continue
 
-        # mq4_data = {
-        #     'methane': round(random.uniform(254, 255), 2),
-        # }
+            # # time.sleep(700)
+            # # Generate dummy data for each sensor
+            # bme688_data = {
+            #     'temperature': round(random.uniform(31, 35),2),
+            #     'pressure': round(random.uniform(999.46, 1054),2),
+            #     'humidity': round(random.uniform(79.32, 86),2),
+            #     'altitude': round(random.uniform(0,115.37),2),
+            # }
 
-        # sgp30_data = {
-        #     'tvoc': round(random.uniform(0,20), 2),
-        #     'co2': round(random.uniform(400, 430), 2),
-        # }
+            # mq4_data = {
+            #     'methane': round(random.uniform(254, 255), 2),
+            # }
 
-        # ze03_data = {
-        #     'co': round(random.uniform(0, 20), 2),
-        #     'o2': round(random.uniform(19, 21), 2),
-        #     'nh3': round(random.uniform(50, 60), 2),
-        #     'h2s': round(random.uniform(10, 20), 2),
-        #     'no2': round(random.uniform(20, 30), 2),
-        #     'so2': round(random.uniform(30, 40), 2),
-        #     'o3': round(random.uniform(10, 20), 2),
-        #     'cl2': round(random.uniform(0, 10), 2),
-        # }
+            # sgp30_data = {
+            #     'tvoc': round(random.uniform(0,20), 2),
+            #     'co2': round(random.uniform(400, 430), 2),
+            # }
 
-        # as726x_data = {
-        #     # Dummy data for AS726x sensor
-        # }
+            # ze03_data = {
+            #     'co': round(random.uniform(0, 20), 2),
+            #     'o2': round(random.uniform(19, 21), 2),
+            #     'nh3': round(random.uniform(50, 60), 2),
+            #     'h2s': round(random.uniform(10, 20), 2),
+            #     'no2': round(random.uniform(20, 30), 2),
+            #     'so2': round(random.uniform(30, 40), 2),
+            #     'o3': round(random.uniform(10, 20), 2),
+            #     'cl2': round(random.uniform(0, 10), 2),
+            # }
 
-        # carson_data = {
-        #     # Dummy data for Carson microscope
-        # }
+            # as726x_data = {
+            #     # Dummy data for AS726x sensor
+            # }
 
-        # soil_probe_data = {
-        #     'temperature': round(random.uniform(24, 26), 2),
-        #     'moisture': round(random.uniform(13, 17), 2),
-        #     'ph_value': round(random.uniform(6, 8), 2),
-            
-        # }
-        # # print("HI")
+            # carson_data = {
+            #     # Dummy data for Carson microscope
+            # }
 
-        data = {
-            'bme688':
-            {
-                'temperature': temp1,
-                'pressure': pres,
-                'humidity': hum,
-                'altitude': "wooo",
-            },
-            'mq4': 
-            {
-                'methane': meth,
-            },
-            'sgp30': 
-            {
-                'tvoc': tvoc,
-                'co2': co2,
-            },
-            'ze03': 
-            {
-                'co': coo,
-                # 'o2': gps,
-                'nh3': dir,
-                'h2s': round(random.uniform(10, 20), 2),
-                'no2': round(random.uniform(20, 30), 2),
-                'so2': round(random.uniform(30, 40), 2),
-                'o3': round(random.uniform(10, 20), 2),
-                'cl2': round(random.uniform(0, 10), 2),
+            # soil_probe_data = {
+            #     'temperature': round(random.uniform(24, 26), 2),
+            #     'moisture': round(random.uniform(13, 17), 2),
+            #     'ph_value': round(random.uniform(6, 8), 2),
+                
+            # }
+            # # print("HI")
+            csv_row = (
+                f"{temp1}\t\t"
+                f"{pres}\t\t"
+                f"{hum}\t\t"
+                f"0\t\t"
+                f"{meth}\t\t"
+                f"{tvoc}\t\t"
+                f"{co2}\t\t"
+                f"{coo}\t\t"
+                f"0\t\t"
+                f"{dir}\t\t"
+                f"-\t\t"
+                f"-\t\t"
+                f"-\t\t"
+                f"-\t\t"
+                f"-\t\t"
+                f"{spec1}\t\t"
+                f"{spec2}\t\t"
+                f"{spec3}\t\t"
+                f"{spec4}\t\t"
+                f"{spec5}\t\t"
+                f"{spec6}\t\t"
+                f"-\t\t"
+                f"{temp}\t\t"
+                f"{moistmeter}\t\t"
+                f"{pHahaha}\n"
+            )
 
-            },
-            'as726x': {
-                # 's1':round(random.uniform(200, 600), 2),
-                # 's2':round(random.uniform(200, 600), 2),
-                # 's3':round(random.uniform(200, 600), 2),
-                # 's4':round(random.uniform(200, 600), 2),
-                # 's5':round(random.uniform(200, 600), 2),
-                # 's6':round(random.uniform(200, 600), 2),
-                's1':spec1,
-                's2':spec2,
-                's3':spec3,
-                's4':spec4,
-                's5':spec5,
-                's6':spec6,
+            # Write the CSV row to the file
+            csvfile.write(csv_row)
+            csvfile.flush()
+
+            data = {
+                'bme688':
+                {
+                    'temperature': temp1,
+                    'pressure': pres,
+                    'humidity': hum,
+                    'altitude': "wooo",
                 },
-            # 'carson': carson_data,
-            'soil_probe': 
-            
-            {
-                'temperature': temp,
-                'moisture': moistmeter,
-                'ph_value': pHahaha,  
-            },
-        }
-        # Emit dummy data to the Flask app
-        sio.emit('update_data', data)
-        # print(data)
-        time.sleep(1)
+                'mq4': 
+                {
+                    'methane': meth,
+                },
+                'sgp30': 
+                {
+                    'tvoc': tvoc,
+                    'co2': co2,
+                },
+                'ze03': 
+                {
+                    'co': coo,
+                    # 'o2': gps,
+                    'nh3': dir,
+                    'h2s': round(random.uniform(10, 20), 2),
+                    'no2': round(random.uniform(20, 30), 2),
+                    'so2': round(random.uniform(30, 40), 2),
+                    'o3': round(random.uniform(10, 20), 2),
+                    'cl2': round(random.uniform(0, 10), 2),
+
+                },
+                'as726x': {
+                    # 's1':round(random.uniform(200, 600), 2),
+                    # 's2':round(random.uniform(200, 600), 2),
+                    # 's3':round(random.uniform(200, 600), 2),
+                    # 's4':round(random.uniform(200, 600), 2),
+                    # 's5':round(random.uniform(200, 600), 2),
+                    # 's6':round(random.uniform(200, 600), 2),
+                    's1':spec1,
+                    's2':spec2,
+                    's3':spec3,
+                    's4':spec4,
+                    's5':spec5,
+                    's6':spec6,
+                    },
+                # 'carson': carson_data,
+                'soil_probe': 
+                
+                {
+                    'temperature': temp,
+                    'moisture': moistmeter,
+                    'ph_value': pHahaha,  
+                },
+            }
+            # Emit dummy data to the Flask app
+            sio.emit('update_data', data)
+            # print(data)
+            time.sleep(1)
 
 
         # data1 = connection.recv(1024).decode('utf-8')

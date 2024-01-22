@@ -126,6 +126,19 @@ def handle_request_imu_data():
 def handle_request_gps_data():
     socketio.emit('gps_data', latest_gps_data)
 
+@socketio.on('save_sensor_data')
+def handle_save_sensor_data(sensor_data):
+    print("YAYYYYYYYYYYYY")
+    try:
+        values_line = ','.join(str(value) for sensor in sensor_data.values() for value in sensor.values())
+
+        with open('./saving/sensor_data.txt', 'a') as file:
+            file.write(values_line + '\n')
+
+        print('Sensor data saved successfully')
+    except Exception as e:
+        print(f"Error saving sensor data: {str(e)}")
+
 @socketio.on('save_image')
 def save_image(data):
     base64_image = data['base64Image']
