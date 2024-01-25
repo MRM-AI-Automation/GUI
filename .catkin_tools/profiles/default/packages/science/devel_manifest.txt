@@ -1,0 +1,7 @@
+science
+/home/nikhilesh/GUII/devel/.private/science/cmake.lock /home/nikhilesh/GUII/devel/./cmake.lock
+/home/nikhilesh/GUII/devel/.private/science/lib/pkgconfig/science.pc /home/nikhilesh/GUII/devel/lib/pkgconfig/science.pc
+/home/nikhilesh/GUII/devel/.private/science/lib/science/cmake.lock /home/nikhilesh/GUII/devel/lib/science/cmake.lock
+/home/nikhilesh/GUII/devel/.private/science/lib/science/gui.py /home/nikhilesh/GUII/devel/lib/science/gui.py
+/home/nikhilesh/GUII/devel/.private/science/share/science/cmake/scienceConfig.cmake /home/nikhilesh/GUII/devel/share/science/cmake/scienceConfig.cmake
+/home/nikhilesh/GUII/devel/.private/science/share/science/cmake/scienceConfig-version.cmake /home/nikhilesh/GUII/devel/share/science/cmake/scienceConfig-version.cmake

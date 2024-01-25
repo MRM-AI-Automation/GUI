@@ -1,0 +1,6 @@
+devel_space: /home/nikhilesh/GUII/devel
+install: false
+install_space: /home/nikhilesh/GUII/install
+profile: default
+source_space: /home/nikhilesh/GUII/src
+workspace: /home/nikhilesh/GUII

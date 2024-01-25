@@ -1,0 +1,1 @@
+/home/nikhilesh/GUII/devel/.private/science/lib/pkgconfig/science.pc
