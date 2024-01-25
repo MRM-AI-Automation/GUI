@@ -184,7 +184,7 @@ def capture_frames(camera, emit_event):
     
 @app.route('/')
 def index():
-    return render_template('main.html')
+    return render_template('index.html')
 
 @app.route('/science')
 def science():
@@ -192,7 +192,7 @@ def science():
 
 @app.route('/react')
 def react():
-    return render_template('index.html')
+    return render_template('main.html')
 
 # @app.route('/video_feed')
 # def video_feed():
