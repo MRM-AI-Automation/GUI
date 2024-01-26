@@ -1,0 +1,2 @@
+Temperature	Pressure	Humidity	Altitude	Methane	TVOC	CO2	CO	O2	NH3	H2S	NO2	SO2	O3	Cl2	AS726x_S1	AS726x_S2	AS726x_S3	AS726x_S4	AS726x_S5	AS726x_S6	Carson_Value	Soil_Temperature	Soil_Moisture	Soil_pH
+33.00		1006.00		67.40		0		110		0		400		110		0		S		-		-		-		-		-		676.51		876.66		714.08		858.39		788.23		736.20		-		24.44		0.00		16.19

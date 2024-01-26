@@ -59,9 +59,9 @@ def add_overlay(image, angle, lat, long, elevation):
     return mrm_image
 
 # Example usage:
-input_image = cv2.imread('/home/nikhilesh/GUII/src/science/scripts/panorama_site1/final_12.jpg')  
+input_image = cv2.imread('/home/nikhilesh/GUII/src/science/scripts/panorama_site1/final_1.jpg')  
 h,w,=input_image.shape[:2]
-output_image = add_overlay(input_image, angle=174.21, lat=11.0243795, long=77.0246601, elevation=413.228)
+output_image = add_overlay(input_image, angle=160.21, lat=11.0243795, long=77.024501, elevation=412.228)
 
 cv2.imshow('Output Image', output_image)
 cv2.imwrite('site1_img1.png', output_image)
