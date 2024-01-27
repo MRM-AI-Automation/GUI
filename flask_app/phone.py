@@ -13,10 +13,14 @@ import json
 from threading import Thread
 from flask_cors import CORS
 import pickle
+from camera import VideoCamera
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*", ping_timeout=5, ping_interval=2, reconnection=True, reconnection_attempts=3, reconnection_delay=1000, reconnection_timeout=5000)
-CORS(app) 
+# CORS(app) 
+
+# video_camera = VideoCamera(socketio)
+
 # app.wsgi_app = socketio.WSGIApp(socketio, app.wsgi_app)
 
 latest_imu_data = {}
@@ -27,25 +31,24 @@ last_data_time = time.time()
 
 connected_clients = 0  
 
-# cap = cv2.VideoCapture(1)
+def gen(camera):
+    while True:
+        frame = camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
-# def generate():
-#     while True:
-#         # Read a frame from the webcam
-#         ret, frame = cap.read()
+temp = 'this is a test'    
+@app.route('/python/<FUNCTION>')
+def command(FUNCTION=None):
+    print(FUNCTION)
+    exec(FUNCTION.replace("<br>", "\n"))
+    return ""
 
-#         # Convert the frame to JPEG format
-#         _, jpeg = cv2.imencode('.jpg', frame)
-
-#         # Encode the JPEG frame as base64
-#         encoded_frame = base64.b64encode(jpeg.tobytes()).decode('utf-8')
-
-#         # Send the frame to the client
-#         socketio.emit('video_feed', encoded_frame)
-
-#         # Yield the frame for rendering in the Response
-#         yield (b'--frame\r\n'
-#                b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
+@app.route('/video_feed')
+def video_feed():
+    print("sending")
+    return Response(gen(VideoCamera()),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @socketio.on('save_data')
 def handle_save_data(data):
@@ -126,18 +129,6 @@ def handle_request_imu_data():
 def handle_request_gps_data():
     socketio.emit('gps_data', latest_gps_data)
 
-@socketio.on('save_sensor_data')
-def handle_save_sensor_data(sensor_data):
-    print("YAYYYYYYYYYYYY")
-    try:
-        values_line = ','.join(str(value) for sensor in sensor_data.values() for value in sensor.values())
-
-        with open('./saving/sensor_data.txt', 'a') as file:
-            file.write(values_line + '\n')
-
-        print('Sensor data saved successfully')
-    except Exception as e:
-        print(f"Error saving sensor data: {str(e)}")
 
 @socketio.on('save_image')
 def save_image(data):
@@ -182,6 +173,10 @@ def capture_frames(camera, emit_event):
 # webcam_thread.start()
 # usb_cam_thread.start()
     
+# @app.route('/panaroma')
+# def panaroma():
+#     return render_template('panaroma.js')
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -203,6 +198,27 @@ def handle_update_data(data):
     print('Received data:', data)
     socketio.emit('sensor_data', data)
 
+devices = [
+    {'name': 'Base Transceiver', 'ip': '10.0.0.8', 'connected': 0},
+    {'name': 'NVR', 'ip': '10.0.0.22', 'connected': 0},
+    {'name': 'Rover Transceiver', 'ip': '10.0.0.2', 'connected': 0},
+    {'name': 'Lan to UART', 'ip': '10.0.0.7', 'connected': 0},
+    {'name': 'RPi-1', 'ip': '10.0.0.3', 'connected': 0},
+    {'name': 'RPi-2', 'ip': '10.0.0.9', 'connected': 0},
+    {'name': 'Jetson', 'ip': '10.0.0.6', 'connected': 0},
+]
+
+def ping_devices():
+    while True:
+        for device in devices:
+            device['connected'] = 1 if os.system(f"ping -c 1 -s 1 -q -w 1 {device['ip']} > /dev/null 2> /dev/null") == 0 else 0
+        print(devices)
+        socketio.emit('update_devices', devices)
+        time.sleep(5)
+
+@socketio.on('connect')
+def handle_connect():
+    socketio.emit('update_devices', devices)
 
 def imu_data_listener(client_socket):
     global latest_imu_data
@@ -324,14 +340,17 @@ def udp_server():
         imu_thread.start()
 
 if __name__ == '__main__':
+    socketio.run(app, debug=False)
+    Thread(target=ping_devices).start()
+        
     #multithreadin
     # rospy.init_node('gps_listener', anonymous=True)
     # socketio.start_background_task(generate_frames)
 
-    tcp_thread = threading.Thread(target=udp_server)
-    tcp_thread.start()
+    # tcp_thread = threading.Thread(target=udp_server)
+    # tcp_thread.start()
 
     # gps_thread = threading.Thread(target=gps_data_listener)
     # gps_thread.start()
     
-    socketio.run(app, debug=False)
+    #socketio.run(app, host="192.168.51.172", debug=False)

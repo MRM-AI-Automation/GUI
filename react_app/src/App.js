@@ -24,9 +24,12 @@ import Soil from './components/Soil'
 import As726x from './components/As726x'
 import CameraFeed from './components/CameraFeed'
 import ScreenshotButton from './components/ScreenshotButton'
+import Webcam from 'react-webcam'
 
 // Define the component
 function SensorDashboard() {
+  const videoRef = useRef(null)
+
   const [sensorData, setSensorData] = useState({
     ze03: {
       co: 0,
@@ -69,7 +72,7 @@ function SensorDashboard() {
 
   const [cameraFrame, setCameraFrame] = useState(null)
   useEffect(() => {
-    const socket = io.connect('http://localhost:5000')
+    const socket = io.connect('http://192.168.51.172:5000/')
 
     socket.on('connect', () => {
       console.log('Connected to WebSocket server')
@@ -82,6 +85,9 @@ function SensorDashboard() {
     // socket.on('chart_data', (data) => {
     //   setChartData(data.values)
     // })
+    // const video = videoRef.current
+    // video.src = 'http://localhost:5000/video_feed'
+    // video.type = 'multipart/x-mixed-replace; boundary=frame'
 
     socket.on('sensor_data', (data) => {
       setSensorData(data)
@@ -95,6 +101,10 @@ function SensorDashboard() {
 
     socket.on('camera_frame', (frameData) => {
       setCameraFrame(`data:image/jpeg;base64, ${frameData}`)
+    })
+
+    socket.on('update_devices', (updatedDevices) => {
+      setDevices(updatedDevices)
     })
 
     socket.on('camera_feed', function (data) {
@@ -112,6 +122,8 @@ function SensorDashboard() {
       socket.disconnect()
     }
   }, [])
+
+  const [devices, setDevices] = useState([])
 
   const saveSensorDataToFile = () => {
     const socket = io.connect('http://localhost:5000')
@@ -210,14 +222,28 @@ function SensorDashboard() {
           title='Where is NH3? Where is H2S? Where is NO2? Where is SO2? Where is O3? Where is Cl2?'
           sensorData={sensorData}
         />
-        <Button id='one' name='RDO' />
-        <Button id='two' name='IDMO' />
+
         {/* <Button id='three'  name='Save Sensor Data' /> */}
-        <button id='three' onClick={saveSensorDataToFile}>
-          Save Sensor Data
-        </button>
+
         {/* <RecordData /> */}
         <ScreenshotButton />
+        <div className='container ' style={{ backgroundColor: '#f0f0f0' }}>
+          <h1 className='text-6xl font-bold mb-4'>Device Status</h1>
+          <div className='text-2xl flex-col gap-10 pb-10'>
+            {devices.map((device) => (
+              <div
+                key={device.name}
+                className={
+                  device.connected === 1
+                    ? 'text-green-600 border-4 p-10 '
+                    : 'text-red-600 border-4 p-10'
+                }>
+                {device.name} - {device.ip} -{' '}
+                {device.connected === 1 ? 'Connected' : 'Not Connected'}
+              </div>
+            ))}
+          </div>
+        </div>
       </span>
       <span className='right'>
         <Mq4 data={sensorData} />
@@ -225,8 +251,20 @@ function SensorDashboard() {
         {/* className='microscope' className='subheader' */}
         <div title={sensorData.soil_probe.ph_value} class='microscope'>
           <div class='subheader'>Microscope</div>
-          {/*<img id='cameraFeed' src='' alt='Camera Feed'></img>*/}
-          <CameraFeed />
+          {/* <video
+            ref={videoRef}
+            style={{ width: '100%', height: '100%' }}
+            controls={false}
+            autoPlay
+          /> */}
+
+          <img
+            src='http://192.168.51.172:5000/video_feed'
+            alt='Video'
+            style={{ width: '100%', height: '88%' }}
+          />
+
+          {/* <Webcam ref={webcamRef} style={{ width: '100%', height: '90%' }} /> */}
         </div>
         <Bme data={sensorData} />
         <Soil data={sensorData} />
