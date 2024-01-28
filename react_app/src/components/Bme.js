@@ -17,10 +17,10 @@ const Bme = ({ data }) => {
         id='press'
         name='Pressure'
         value={data.bme688.pressure}
-        unit='Hpa'
+        unit='hPa'
       />
       <Sensor id='hum' name='Humidity' value={data.bme688.humidity} unit='%' />
-      <Sensor id='alt' name='Altitude' value={data.bme688.altitude} unit='m' />
+      {/* <Sensor id='alt' name='Altitude' value={data.bme688.altitude} unit='m' /> */}
     </div>
   )
 }

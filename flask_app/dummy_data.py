@@ -14,105 +14,102 @@ bridge = CvBridge()
 
 def generate_dummy_data():
     # Open the CSV file for writing
-    with open('./saving/science_data.txt', 'w', newline='') as csvfile:
-        # Write the header row with labels
-        header_row = "Temperature\tPressure\tHumidity\tAltitude\tMethane\tTVOC\tCO2\tCO\tO2\tNH3\tH2S\tNO2\tSO2\tO3\tCl2\tAS726x_S1\tAS726x_S2\tAS726x_S3\tAS726x_S4\tAS726x_S5\tAS726x_S6\tCarson_Value\tSoil_Temperature\tSoil_Moisture\tSoil_pH\n"
-        csvfile.write(header_row)
+    
+    with open('/home/nikhilesh/GUII/flask_app/saving/science_data.txt', 'w', newline='') as txtfile:
+        with open('/home/nikhilesh/GUII/flask_app/saving/science_data.csv', 'w', newline='') as csvfile:
+            header_row = "Temperature\tPressure\tHumidity\tMethane\tTVOC\tCO2\tCO\tS1\tS2\tS3\tS4\tS5\tS6\tSoil_Temperature\tSoil_Moisture\tSoil_pH\n"            
+            txtfile.write(header_row)
+            csvfile.write(header_row)
 
-        while True:
-            # Generate dummy data for each sensor
-            bme688_data = {
-                'Temperature': round(random.uniform(31, 35), 2),
-                'Pressure': round(random.uniform(999.46, 1054), 2),
-                'Humidity': round(random.uniform(79.32, 86), 2),
-                'Altitude': round(random.uniform(0, 115.37), 2),
-            }
+            while True:
+                # Generate dummy data for each sensor
+                bme688_data = {
+                    'temperature': round(random.uniform(31, 35), 2),
+                    'pressure': round(random.uniform(999.46, 1054), 2),
+                    'humidity': round(random.uniform(79.32, 86), 2),
+                    'altitude': round(random.uniform(0, 115.37), 2),
+                }
 
-            mq4_data = {
-                'Methane': round(random.uniform(254, 255), 2),
-            }
+                mq4_data = {
+                    'methane': round(random.uniform(254, 255), 2),
+                }
 
-            sgp30_data = {
-                'TVOC': round(random.uniform(0, 20), 2),
-                'CO2': round(random.uniform(400, 430), 2),
-            }
+                sgp30_data = {
+                    'tvoc': round(random.uniform(0, 20), 2),
+                    'co2': round(random.uniform(400, 430), 2),
+                }
 
-            ze03_data = {
-                'CO': round(random.uniform(0, 20), 2),
-                'O2': round(random.uniform(19, 21), 2),
-                'NH3': round(random.uniform(50, 60), 2),
-                'H2S': round(random.uniform(10, 20), 2),
-                'NO2': round(random.uniform(20, 30), 2),
-                'SO2': round(random.uniform(30, 40), 2),
-                'O3': round(random.uniform(10, 20), 2),
-                'Cl2': round(random.uniform(0, 10), 2),
-            }
+                ze03_data = {
+                    'co': round(random.uniform(0, 20), 2),
+                    'o2': round(random.uniform(19, 21), 2),
+                    'nh3': round(random.uniform(50, 60), 2),
+                    'h2s': round(random.uniform(10, 20), 2),
+                    'no2': round(random.uniform(20, 30), 2),
+                    'so2': round(random.uniform(30, 40), 2),
+                    'o3': round(random.uniform(10, 20), 2),
+                    'cl2': round(random.uniform(0, 10), 2),
+                }
 
-            as726x_data = {
-                'AS726x_S1': 0,
-                'AS726x_S2': 0,
-                'AS726x_S3': 0,
-                'AS726x_S4': 0,
-                'AS726x_S5': 0,
-                'AS726x_S6': 0,
-            }
+                as726x_data = {
+                    's1': random.uniform(0,4000),
+                    's2': random.uniform(0,4000),
+                    's3': random.uniform(0,4000),
+                    's4': random.uniform(0,4000),
+                    's5': random.uniform(0,4000),
+                    's6': random.uniform(0,4000),
+                }
 
-            carson_data = {
-                'Carson_Value': 0,
-            }
+                carson_data = {
+                    'Carson_Value': 0,
+                }
 
-            soil_probe_data = {
-                'Soil_Temperature': round(random.uniform(24, 26), 2),
-                'Soil_Moisture': round(random.uniform(13, 17), 2),
-                'Soil_pH': round(random.uniform(6, 8), 2),
-            }
+                soil_probe_data = {
+                    'temperature': round(random.uniform(24, 26), 2),
+                    'moisture': round(random.uniform(13, 17), 2),
+                    'ph_value': round(random.uniform(6, 8), 2),
+                }
 
-            # Prepare data for writing to CSV
-            csv_row = (
-                f"{bme688_data['Temperature']}\t\t"
-                f"{bme688_data['Pressure']}\t\t"
-                f"{bme688_data['Humidity']}\t\t"
-                f"{bme688_data['Altitude']}\t\t"
-                f"{mq4_data['Methane']}\t\t"
-                f"{sgp30_data['TVOC']}\t\t"
-                f"{sgp30_data['CO2']}\t\t"
-                f"{ze03_data['CO']}\t\t"
-                f"{ze03_data['O2']}\t\t"
-                f"{ze03_data['NH3']}\t\t"
-                f"{ze03_data['H2S']}\t\t"
-                f"{ze03_data['NO2']}\t\t"
-                f"{ze03_data['SO2']}\t\t"
-                f"{ze03_data['O3']}\t\t"
-                f"{ze03_data['Cl2']}\t\t"
-                f"{as726x_data['AS726x_S1']}\t\t"
-                f"{as726x_data['AS726x_S2']}\t\t"
-                f"{as726x_data['AS726x_S3']}\t\t"
-                f"{as726x_data['AS726x_S4']}\t\t"
-                f"{as726x_data['AS726x_S5']}\t\t"
-                f"{as726x_data['AS726x_S6']}\t\t"
-                f"{carson_data['Carson_Value']}\t\t"
-                f"{soil_probe_data['Soil_Temperature']}\t\t"
-                f"{soil_probe_data['Soil_Moisture']}\t\t"
-                f"{soil_probe_data['Soil_pH']}\n"
-            )
+                # Prepare data for writing to CSV
+                csv_row = (
+                    f"{bme688_data['temperature']}\t"
+                    f"{bme688_data['pressure']}\t"
+                    f"{bme688_data['humidity']}\t"
+                    f"{mq4_data['methane']}\t"
+                    f"{sgp30_data['tvoc']}\t"
+                    f"{sgp30_data['co2']}\t"
+                    f"{ze03_data['co']}\t"
+                    f"{as726x_data['s1']}\t"
+                    f"{as726x_data['s2']}\t"
+                    f"{as726x_data['s3']}\t"
+                    f"{as726x_data['s4']}\t"
+                    f"{as726x_data['s5']}\t"
+                    f"{as726x_data['s6']}\t"
+                    f"{soil_probe_data['temperature']}\t"
+                    f"{soil_probe_data['moisture']}\t"
+                    f"{soil_probe_data['ph_value']}\n"
+                )
 
-            # Write the CSV row to the file
-            csvfile.write(csv_row)
-            csvfile.flush()  # Ensure the data is written immediately to the file
+                # Write the CSV row to the file
+                csvfile.write(csv_row)
+                csvfile.flush() 
+                txtfile.write(csv_row)
+                txtfile.flush()
+                 # Ensure the data is written immediately to the file
 
-            # Emit dummy data to the Flask app
-            data = {
-                'bme688': bme688_data,
-                'mq4': mq4_data,
-                'sgp30': sgp30_data,
-                'ze03': ze03_data,
-                'as726x': as726x_data,
-                'carson': carson_data,
-                'soil_probe': soil_probe_data,
-            }
-            sio.emit('update_data', data)
+                # Emit dummy data to the Flask app
+                data = {
+                    'bme688': bme688_data,
+                    'mq4': mq4_data,
+                    'sgp30': sgp30_data,
+                    'ze03': ze03_data,
+                    'as726x': as726x_data,
+                    'carson': carson_data,
+                    'soil_probe': soil_probe_data,
+                }
+                sio.emit('update_data', data)
+                # print(data)
 
-            time.sleep(1)
+                time.sleep(1)
 # Connect to the Flask app
 @sio.on('connect')
 def on_connect():

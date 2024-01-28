@@ -1,27 +1,29 @@
 import React from 'react'
 import html2canvas from 'html2canvas'
+import domtoimage from 'dom-to-image'
 
-const ScreenshotButton = () => {
+const ScreenshotButton = ({ id }) => {
   const handleScreenshot = () => {
-    const targetElement = document.documentElement
+    // const targetElement = microscopeRef.current
 
-    html2canvas(targetElement, { scale: 2 }).then((canvas) => {
-      // Convert the canvas to a data URL
-      const screenshotDataUrl = canvas.toDataURL()
-
-      // Create a link element and trigger a download
-      const link = document.createElement('a')
-      link.href = screenshotDataUrl
-      link.download = 'screenshot.png'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-    })
+    domtoimage
+      // .toPng(targetElement)
+      .then((dataUrl) => {
+        const link = document.createElement('a')
+        link.href = dataUrl
+        link.download = 'microscope_screenshot.png'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
+      .catch((error) => {
+        console.error('Error capturing screenshot:', error)
+      })
   }
 
   return (
     <div>
-      <button id='four' onClick={handleScreenshot}>
+      <button id={id} onClick={handleScreenshot}>
         Take Screenshot
       </button>
     </div>

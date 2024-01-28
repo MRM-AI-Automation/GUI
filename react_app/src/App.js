@@ -24,12 +24,19 @@ import Soil from './components/Soil'
 import As726x from './components/As726x'
 import CameraFeed from './components/CameraFeed'
 import ScreenshotButton from './components/ScreenshotButton'
-import Webcam from 'react-webcam'
+import { data } from 'autoprefixer'
 
 // Define the component
 function SensorDashboard() {
-  const videoRef = useRef(null)
+  //const [imageSrc, setImageSrc] = useState('http://localhost:5000/video_feed')
 
+  // async function getImage() {
+  //   while (1 === 1) {
+  //     setImageSrc('http://localhost:5000/video_feed')
+  //   }
+  // }
+  const [maxGraphVal, setMaxGraphVal] = useState(100)
+  // const [devices, setDevices] = useState([])
   const [sensorData, setSensorData] = useState({
     ze03: {
       co: 0,
@@ -68,11 +75,12 @@ function SensorDashboard() {
       s6: 0,
     },
   })
-  console.log(sensorData)
 
   const [cameraFrame, setCameraFrame] = useState(null)
   useEffect(() => {
-    const socket = io.connect('http://192.168.51.172:5000/')
+    const socket = io.connect('http://localhost:5000')
+
+    //getImage()
 
     socket.on('connect', () => {
       console.log('Connected to WebSocket server')
@@ -82,70 +90,15 @@ function SensorDashboard() {
       console.log('Disconnected from WebSocket server')
     })
 
-    // socket.on('chart_data', (data) => {
-    //   setChartData(data.values)
-    // })
-    // const video = videoRef.current
-    // video.src = 'http://localhost:5000/video_feed'
-    // video.type = 'multipart/x-mixed-replace; boundary=frame'
-
     socket.on('sensor_data', (data) => {
       setSensorData(data)
-      // console.log('Received data:', data)
-    })
-
-    socket.on('update_data', (data) => {
-      setSensorData(data)
-      // console.log('Received data:', data)
-    })
-
-    socket.on('camera_frame', (frameData) => {
-      setCameraFrame(`data:image/jpeg;base64, ${frameData}`)
-    })
-
-    socket.on('update_devices', (updatedDevices) => {
-      setDevices(updatedDevices)
-    })
-
-    socket.on('camera_feed', function (data) {
-      console.log('Real?')
-      if (data.image) {
-        // Display the camera feed on an HTML img element
-        var imgElement = document.getElementById('cameraFeed')
-        imgElement.src =
-          'data:image/jpeg;base64,' +
-          btoa(String.fromCharCode.apply(null, new Uint8Array(data.buffer)))
-      }
+      setMaxGraphVal(Math.max(Object.values(data.as726x)))
     })
 
     return () => {
       socket.disconnect()
     }
   }, [])
-
-  const [devices, setDevices] = useState([])
-
-  const saveSensorDataToFile = () => {
-    const socket = io.connect('http://localhost:5000')
-
-    // Emit a custom event to the server when the button is clicked
-    socket.emit('save_sensor_data', sensorData)
-    console.log('Requested')
-
-    // Disconnect the socket after sending the event
-    socket.disconnect()
-  }
-
-  // const saveChartImage = (chart) => {
-  //   const base64Image = chart.toBase64Image()
-  //   const cleanedBase64Image = base64Image.replace(
-  //     /^data:image\/png;base64,/,
-  //     ''
-  //   )
-  //   // Send the base64 image data to the Flask server
-  //   const socket = socketIOClient('http://localhost:5000')
-  //   socket.emit('save_image', { cleanedBase64Imagebase64Image })
-  // }
 
   useEffect(() => {
     const ctx = document.getElementById('sensorChart').getContext('2d')
@@ -161,14 +114,7 @@ function SensorDashboard() {
           },
         },
         data: {
-          labels: [
-            // 'Sensor 1',
-            // 'Sensor 2',
-            // 'Sensor 3',
-            // 'Sensor 4',
-            // 'Sensor 5',
-            // 'Sensor 6',
-          ],
+          labels: [``],
           datasets: [
             {
               label: '',
@@ -180,23 +126,16 @@ function SensorDashboard() {
           ],
         },
         options: {
-          // onClick: () => {
-          //   console.log('Chart save')
-          //   // saveChartImage(sensorChart)
-          // },
           scales: {
             y: {
               beginAtZero: true,
-              max: 4000,
+              max: maxGraphVal,
             },
           },
         },
       })
     }
     sensorChart.data.datasets[0].data = sensorData.as726x
-    // const base64Image = myChart.toBase64Image()
-    // const socket = socketIOClient('http://localhost:5000')
-    // socket.emit('save_image', { base64Image })
     sensorChart.update()
 
     return () => {
@@ -222,49 +161,37 @@ function SensorDashboard() {
           title='Where is NH3? Where is H2S? Where is NO2? Where is SO2? Where is O3? Where is Cl2?'
           sensorData={sensorData}
         />
-
-        {/* <Button id='three'  name='Save Sensor Data' /> */}
-
-        {/* <RecordData /> */}
-        <ScreenshotButton />
-        <div className='container ' style={{ backgroundColor: '#f0f0f0' }}>
-          <h1 className='text-6xl font-bold mb-4'>Device Status</h1>
-          <div className='text-2xl flex-col gap-10 pb-10'>
-            {devices.map((device) => (
-              <div
-                key={device.name}
-                className={
-                  device.connected === 1
-                    ? 'text-green-600 border-4 p-10 '
-                    : 'text-red-600 border-4 p-10'
-                }>
-                {device.name} - {device.ip} -{' '}
-                {device.connected === 1 ? 'Connected' : 'Not Connected'}
-              </div>
-            ))}
-          </div>
-        </div>
+        <Button id='one' name='RDO' />
+        <Button id='two' name='IDMO' />
+        <Image
+          title='Anky@9798'
+          src='/static/sm.jpeg'
+          style={{
+            width: '80%',
+            position: 'relative',
+            top: '8%',
+            left: '10%',
+            borderRadius: 50,
+          }}
+        />
       </span>
       <span className='right'>
-        <Mq4 data={sensorData} />
+        <div className='mq4'>
+          <div className='subheader'>MQ4</div>
+          {/* <Sensor id='mq4ch4' name='CH4' value={data.mq4.methane} unit='ppm' /> */}
+          <div id='mq4ch4' className='item'>
+            CH4 : {sensorData.mq4.methane}
+          </div>
+        </div>
         <Sgp data={sensorData} />
         {/* className='microscope' className='subheader' */}
         <div title={sensorData.soil_probe.ph_value} class='microscope'>
           <div class='subheader'>Microscope</div>
-          {/* <video
-            ref={videoRef}
-            style={{ width: '100%', height: '100%' }}
-            controls={false}
-            autoPlay
-          /> */}
-
-          <img
-            src='http://192.168.51.172:5000/video_feed'
+          {/* <img
+            src='http://localhost:5000/video_feed'
             alt='Video'
             style={{ width: '100%', height: '88%' }}
-          />
-
-          {/* <Webcam ref={webcamRef} style={{ width: '100%', height: '90%' }} /> */}
+          /> */}
         </div>
         <Bme data={sensorData} />
         <Soil data={sensorData} />
