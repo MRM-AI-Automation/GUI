@@ -9,6 +9,7 @@ import socket
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from decimal import Decimal
+import random
 
 
 # app = Flask(_name_)
@@ -20,7 +21,7 @@ bridge = CvBridge()
 
 
 receiver_ip1 = ''
-receiver_port1 = 12345
+receiver_port1 = 12346
 
 server_sock1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_sock1.bind((receiver_ip1, receiver_port1))
@@ -31,6 +32,19 @@ print(f"Waiting for a connection on {receiver_ip1}:{receiver_port1}")
 connection1, sender_address1 = server_sock1.accept()
 print(f"Connection established with {sender_address1}")
 
+fixed_latitude = 13.3482785  # Example latitude
+fixed_longitude = 74.7911517  # Example longitude
+
+def fluctuate_coordinates(latitude, longitude):
+    # Fluctuating value for latitude
+        fluctuated_latitude = latitude + (random.random() - 0.5) / 100000
+        
+        # Fluctuating value for longitude
+        fluctuated_longitude = longitude + (random.random() - 0.5) / 100000
+        
+        # Return fluctuated coordinates
+        return round(fluctuated_latitude, 6), round(fluctuated_longitude, 6)
+
 def generate_dummy_data():
     with open('/home/nikhilesh/GUII/flask_app/saving/science_data.txt', 'w', newline='') as txtfile:
         with open('/home/nikhilesh/GUII/flask_app/saving/science_data.csv', 'w', newline='') as csvfile:
@@ -40,21 +54,24 @@ def generate_dummy_data():
             while True:
                 # print('hi')
                 data3 = connection1.recv(1024).decode('utf-8')
-                print(data3)
+                # print(data3)
                 try:
                     data1, data2 = data3.split('Z')
+                    print(data1)
                 except:
                     continue
                 
+                lat, lon = fluctuate_coordinates(fixed_latitude, fixed_longitude)
                 
                 try:
                     # if 'S' in data1 and 'M' in data1 and 'T' in data1 and 'P' in data1 and 'E' in data1 and 'M' in data2 and 'O' in data2 and 'F' in data2 and 'T' in data2 and 'P' in data2 and 'H' in data2 and 'O' in data2 and data2.endswith('X'):
-                    combine1 = data1[1:-1].replace('M', ',').replace('T', ',').replace('P', ',')
+                    combine1 = data2[1:-1].replace('M', ',').replace('T', ',').replace('P', ',')
                     spec1, spec2, spec3, spec4, spec5, spec6, moistmeter, temp, pHahaha = combine1.split(',')
-                    combine2 = data2[1:-1].replace('M', ',').replace('H', ',').replace('P', ',').replace('T', ',').replace('O', ',').replace('F', ',').replace('D', ',')
+                    combine2 = data1[1:-1].replace('M', ',').replace('H', ',').replace('P', ',').replace('T', ',').replace('O', ',').replace('F', ',').replace('D', ',')
                     coo, meth, tvoc, co2, temp1, pres, hum, dir = combine2.split(',')
                     print(f"Received data: {combine1}")
-                    # print(f"Received data: {combine2}")
+                    print(coo)
+                    print(f"Received data: {combine2}")
                 except:
                     continue
 
@@ -89,7 +106,7 @@ def generate_dummy_data():
                         'temperature': temp1,
                         'pressure': pres,
                         'humidity': hum,
-                        'altitude': "wooo",
+                        'altitude': dir,
                     },
                     'mq4': 
                     {
@@ -103,6 +120,8 @@ def generate_dummy_data():
                     'ze03': 
                     {
                         'co': coo,
+                        'lat': lat,
+                        'lon': lon,
                     },
                     'as726x': {
                         's1':spec1,

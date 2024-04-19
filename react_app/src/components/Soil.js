@@ -17,7 +17,7 @@ const Soil = ({ data }) => {
         value={data.soil_probe.moisture}
         unit='%'
       />
-      <Sensor id='pH' name='pH' value={data.soil_probe.ph_value} unit='pH' />
+      {/* <Sensor id='pH' name='pH' value={data.soil_probe.ph_value} unit='pH' /> */}
     </div>
   )
 }

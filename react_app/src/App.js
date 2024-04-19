@@ -15,16 +15,17 @@ import Chart from 'chart.js/auto'
 // import Webcam from 'react-webcam'
 // import Sensor from './components/Sensor'
 import Ze03 from './components/Ze03'
-import Button from './components/Button'
+// import Button from './components/Button'
 import Image from './components/Image'
-import Mq4 from './components/Mq4'
+// import Mq4 from './components/Mq4'
 import Sgp from './components/Sgp'
 import Bme from './components/Bme'
 import Soil from './components/Soil'
-import As726x from './components/As726x'
-import CameraFeed from './components/CameraFeed'
-import ScreenshotButton from './components/ScreenshotButton'
-import { data } from 'autoprefixer'
+// import As726x from './components/As726x'
+// import CameraFeed from './components/CameraFeed'
+// import ScreenshotButton from './components/ScreenshotButton'
+// import { data } from 'autoprefixer'
+import Sensor from './components/Sensor'
 
 // Define the component
 function SensorDashboard() {
@@ -92,6 +93,7 @@ function SensorDashboard() {
 
     socket.on('sensor_data', (data) => {
       setSensorData(data)
+      console.log(data)
       setMaxGraphVal(Math.max(Object.values(data.as726x)))
     })
 
@@ -129,7 +131,7 @@ function SensorDashboard() {
           scales: {
             y: {
               beginAtZero: true,
-              max: maxGraphVal,
+              max: 9000,
             },
           },
         },
@@ -161,15 +163,30 @@ function SensorDashboard() {
           title='Where is NH3? Where is H2S? Where is NO2? Where is SO2? Where is O3? Where is Cl2?'
           sensorData={sensorData}
         />
-        <Button id='one' name='RDO' />
-        <Button id='two' name='IDMO' />
+        <div className='gps'>
+          <div className='subheader'>GPS</div>
+          <Sensor
+            id='lat'
+            name='Latitude'
+            value={sensorData.ze03.lat}
+            unit='°'
+          />
+          <Sensor
+            id='lon'
+            name='Longitude'
+            value={sensorData.ze03.lon}
+            unit='°'
+          />
+        </div>
+        {/* <Button id='one' name='RDO' />
+        <Button id='two' name='IDMO' /> */}
         <Image
           title='Anky@9798'
           src='/static/sm.jpeg'
           style={{
             width: '80%',
             position: 'relative',
-            top: '8%',
+            top: '-15%',
             left: '10%',
             borderRadius: 50,
           }}
@@ -199,17 +216,23 @@ function SensorDashboard() {
         <div className='spectral'>
           <div className='subheader'>AS726x</div>
           {/* <h1>AS726x Sensor Data</h1> */}
-          <canvas id='sensorChart' width='400' height='200'></canvas>
+          <canvas id='sensorChart' width='400' height='170'></canvas>
         </div>
 
-        {/* <div className='spectral'>
-          <canvas id='sensorChart' width='400' height='300'></canvas>
-        </div> */}
-
-        <div
-          title="This is of the class 'stupid' in the source code because of how stupid it is"
-          className='stupid'>
-          HANS AND LEIA MODULE
+        <div className='flu'>
+          <div className='subheader'>Flurometer</div>
+          <Sensor
+            id='current'
+            name='Current'
+            value={sensorData.ze03.lat}
+            unit='A'
+          />
+          <Sensor
+            id='resistance'
+            name='Resistance'
+            value={sensorData.ze03.lon}
+            unit='Ω'
+          />
         </div>
       </span>
     </div>

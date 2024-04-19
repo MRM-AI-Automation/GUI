@@ -6,7 +6,7 @@ const Sgp = ({ data }) => {
     <div className='sgp'>
       <div className='subheader'>SGP</div>
       <Sensor id='tvoc' name='tVOC' value={data.sgp30.tvoc} unit='ppm' />
-      <Sensor id='sgpCO' name='CO' value={data.sgp30.co2} unit='ppm' />
+      <Sensor id='sgpCO' name='CO2' value={data.sgp30.co2} unit='ppm' />
     </div>
   )
 }
