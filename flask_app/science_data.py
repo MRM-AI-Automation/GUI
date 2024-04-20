@@ -46,31 +46,32 @@ def fluctuate_coordinates(latitude, longitude):
         return round(fluctuated_latitude, 6), round(fluctuated_longitude, 6)
 
 def generate_dummy_data():
-    with open('/home/nikhilesh/GUII/flask_app/saving/science_data.txt', 'w', newline='') as txtfile:
-        with open('/home/nikhilesh/GUII/flask_app/saving/science_data.csv', 'w', newline='') as csvfile:
+    with open('/home/siddharth/GUI/flask_app/saving/science_data.txt', 'w', newline='') as txtfile:
+        with open('/home/siddharth/GUI/flask_app/saving/science_data.csv', 'w', newline='') as csvfile:
             header_row = "Temperature\tPressure\tHumidity\tMethane\tTVOC\tCO2\tCO\tS1\tS2\tS3\tS4\tS5\tS6\tSoil_Temperature\tSoil_Moisture\tSoil_pH\n"            
             txtfile.write(header_row)
             csvfile.write(header_row)
             while True:
                 # print('hi')
                 data3 = connection1.recv(1024).decode('utf-8')
+                # data3 = "S676.51,876.66,714.08,858.39,788.23,736.20M0.00T24.44EZC110M110O0F400T33.00P1006.00H67.40DSX"
+                # data3 = "S676.51,876.66,714.08,858.39,788.23,736.20M0.00T24.44P50EZC110M110O0F400T33.00P1006.00H67.40DSXL13.555B77.055"
                 # print(data3)
                 try:
-                    data1, data2 = data3.split('Z')
+                    data1,data2 = data3.split('Z')
+                    # print("hello")
                     print(data1)
                 except:
                     continue
                 
-                lat, lon = fluctuate_coordinates(fixed_latitude, fixed_longitude)
-                
+                # lat, lon = fluctuate_coordinates(fixed_latitude, fixed_longitude)
                 try:
                     # if 'S' in data1 and 'M' in data1 and 'T' in data1 and 'P' in data1 and 'E' in data1 and 'M' in data2 and 'O' in data2 and 'F' in data2 and 'T' in data2 and 'P' in data2 and 'H' in data2 and 'O' in data2 and data2.endswith('X'):
-                    combine1 = data2[1:-1].replace('M', ',').replace('T', ',').replace('P', ',')
-                    spec1, spec2, spec3, spec4, spec5, spec6, moistmeter, temp, pHahaha = combine1.split(',')
-                    combine2 = data1[1:-1].replace('M', ',').replace('H', ',').replace('P', ',').replace('T', ',').replace('O', ',').replace('F', ',').replace('D', ',')
-                    coo, meth, tvoc, co2, temp1, pres, hum, dir = combine2.split(',')
+                    combine1 = data1[1:-1].replace('M', ',').replace('T', ',').replace('P', ',')
+                    spec1, spec2, spec3, spec4, spec5, spec6, moistmeter, temp,LDR = combine1.split(',')
+                    combine2 = data2[1:-1].replace('M', ',').replace('H', ',').replace('P', ',').replace('T', ',').replace('O', ',').replace('F', ',').replace('D', ',').replace('L', ',').replace('B', ',')
+                    coo, meth, tvoc, co2, temp1, pres, hum, dir,lat,lon = combine2.split(',')
                     print(f"Received data: {combine1}")
-                    print(coo)
                     print(f"Received data: {combine2}")
                 except:
                     continue
@@ -91,7 +92,9 @@ def generate_dummy_data():
                     f"{spec6}\t"
                     f"{temp}\t"
                     f"{moistmeter}\t"
-                    f"{pHahaha}\n"
+                    f"{cur}\n"
+                    f"{res}\n"
+                    f"{dir}\n"
                 )
 
                 # # Write the CSV row to the file
@@ -99,7 +102,6 @@ def generate_dummy_data():
                 txtfile.flush()
                 csvfile.write(csv_row)
                 csvfile.flush()
-
                 data = {
                     'bme688':
                     {
@@ -120,8 +122,12 @@ def generate_dummy_data():
                     'ze03': 
                     {
                         'co': coo,
-                        'lat': lat,
-                        'lon': lon,
+                    },
+                    'gps': 
+                    {
+                        'latitude': lat,
+                        'longitude': lon,
+                        'direction': dir,
                     },
                     'as726x': {
                         's1':spec1,
@@ -131,13 +137,17 @@ def generate_dummy_data():
                         's5':spec5,
                         's6':spec6,
                         },
+                    'fluorometer': 
+                    {
+                        'current': cur,  
+                        'resistance': res,
+                    },
                     # 'carson': carson_data,
                     'soil_probe': 
                     
                     {
                         'temperature': temp,
                         'moisture': moistmeter,
-                        'ph_value': pHahaha,  
                     },
                 }
                 # Emit dummy data to the Flask app

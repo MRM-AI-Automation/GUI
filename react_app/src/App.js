@@ -41,13 +41,15 @@ function SensorDashboard() {
   const [sensorData, setSensorData] = useState({
     ze03: {
       co: 0,
-      o2: 0,
-      nh3: 0,
-      h2s: 0,
-      no2: 0,
-      so2: 0,
-      o3: 0,
-      cl2: 0,
+    },
+    gps: {
+      lat: 0,
+      lon: 0,
+      dir: 0,
+    },
+    flurometer: {
+      cur: 0,
+      res: 0,
     },
     bme688: {
       temperature: 0,
@@ -168,14 +170,20 @@ function SensorDashboard() {
           <Sensor
             id='lat'
             name='Latitude'
-            value={sensorData.ze03.lat}
+            value={sensorData.gps.lat}
             unit='°'
           />
           <Sensor
             id='lon'
             name='Longitude'
-            value={sensorData.ze03.lon}
+            value={sensorData.gps.lon}
             unit='°'
+          />
+          <Sensor
+            id='dir'
+            name='Direction'
+            value={sensorData.gps.dir}
+            unit=''
           />
         </div>
         {/* <Button id='one' name='RDO' />
@@ -224,13 +232,13 @@ function SensorDashboard() {
           <Sensor
             id='current'
             name='Current'
-            value={sensorData.ze03.lat}
+            value={sensorData.flurometer.cur}
             unit='A'
           />
           <Sensor
             id='resistance'
             name='Resistance'
-            value={sensorData.ze03.lon}
+            value={sensorData.flurometer.res}
             unit='Ω'
           />
         </div>
