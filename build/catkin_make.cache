@@ -1,0 +1,2 @@
+science
+-DCATKIN_DEVEL_PREFIX=/home/siddharth/GUI/devel -DCMAKE_INSTALL_PREFIX=/home/siddharth/GUI/install -G Unix Makefiles

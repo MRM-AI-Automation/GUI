@@ -15,7 +15,7 @@ def load_images_from_folder(folder_path):
             images.append(img)
     return images
 
-folder_path = '/home/nikhilesh/GUII/src/science/scripts/site1'
+folder_path = '/home/siddharth/GUI/src/science/scripts/site1'
 images = load_images_from_folder(folder_path)
 
 

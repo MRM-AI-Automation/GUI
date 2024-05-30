@@ -179,12 +179,12 @@ function SensorDashboard() {
             value={sensorData.gps.lon}
             unit='°'
           />
-          <Sensor
+          {/* <Sensor
             id='dir'
             name='Direction'
             value={sensorData.gps.dir}
             unit=''
-          />
+          /> */}
         </div>
         {/* <Button id='one' name='RDO' />
         <Button id='two' name='IDMO' /> */}
@@ -201,13 +201,13 @@ function SensorDashboard() {
         />
       </span>
       <span className='right'>
-        <div className='mq4'>
+        {/* <div className='mq4'>
           <div className='subheader'>MQ4</div>
-          {/* <Sensor id='mq4ch4' name='CH4' value={data.mq4.methane} unit='ppm' /> */}
+          <Sensor id='mq4ch4' name='CH4' value={data.mq4.methane} unit='ppm' /> 
           <div id='mq4ch4' className='item'>
             CH4 : {sensorData.mq4.methane}
           </div>
-        </div>
+        </div> */}
         <Sgp data={sensorData} />
         {/* className='microscope' className='subheader' */}
         <div title={sensorData.soil_probe.ph_value} class='microscope'>
@@ -229,12 +229,12 @@ function SensorDashboard() {
 
         <div className='flu'>
           <div className='subheader'>Flurometer</div>
-          <Sensor
+          {/* <Sensor
             id='current'
             name='Current'
             value={sensorData.flurometer.cur}
             unit='A'
-          />
+          /> */}
           <Sensor
             id='resistance'
             name='Resistance'

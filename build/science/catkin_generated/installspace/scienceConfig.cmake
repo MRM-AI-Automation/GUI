@@ -67,14 +67,14 @@ set(science_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(science_SOURCE_PREFIX /home/nikhilesh/GUII/src/science)
-  set(science_DEVEL_PREFIX /home/nikhilesh/GUII/devel/.private/science)
+  set(science_SOURCE_PREFIX /home/siddharth/GUI/src/science)
+  set(science_DEVEL_PREFIX /home/siddharth/GUI/devel)
   set(science_INSTALL_PREFIX "")
   set(science_PREFIX ${science_DEVEL_PREFIX})
 else()
   set(science_SOURCE_PREFIX "")
   set(science_DEVEL_PREFIX "")
-  set(science_INSTALL_PREFIX /home/nikhilesh/GUII/install)
+  set(science_INSTALL_PREFIX /home/siddharth/GUI/install)
   set(science_PREFIX ${science_INSTALL_PREFIX})
 endif()
 
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/nikhilesh/GUII/install/lib;/home/nikhilesh/GUII/devel/lib;/opt/ros/noetic/lib)
+    foreach(path /home/siddharth/GUI/install/lib;/home/siddharth/GUI/devel/lib;/home/siddharth/catkin_ws/devel/lib;/opt/ros/noetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

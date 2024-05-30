@@ -35,7 +35,7 @@
   top: 2%;
   left: 5%;
   height: 20%;
-  width: 42%;
+  width: 35%;
 }
 
 .gps {
@@ -43,9 +43,9 @@
   border-radius: 10px;
   position: relative;
   top: -18.3%;
-  left: 52%;
+  left: 45%;
   height: 20%;
-  width: 42%;
+  width: 49%;
 }
 
 .mq4 {
@@ -62,10 +62,10 @@
   border: 2px solid white;
   border-radius: 10px;
   position: relative;
-  width: 15%;
-  height: 20%;
-  top: -16.2%;
-  left: 20%;
+  width: 32%;
+  height: 21%;
+  top: 3%;
+  left: 3%;
 }
 
 .microscope {
@@ -73,8 +73,8 @@
   border-radius: 10px;
   position: relative;
   left: 38%;
-  top: -36.5%;
-  width: 58%;
+  top: -18.3%;
+  width: 58%; /*17.2*/
   height: 50%;
 }
 
@@ -83,7 +83,7 @@
   border-radius: 10px;
   position: relative;
   left: 3%;
-  top: -64%;
+  top: -45.8%;
   width: 32%;
   height: 27%;
 }
@@ -93,8 +93,8 @@
   border-radius: 10px;
   position: relative;
   width: 66%;
-  height: 42%;
-  top: -82.7%;
+  height: 43%;
+  top: -63.5%;
   left: 30%;
 }
 
@@ -104,7 +104,7 @@
   position: relative;
   width: 24%;
   height: 20.5%;
-  top: -62%;
+  top: -42.8%;
   left: 3%;
 }
 
@@ -114,7 +114,7 @@
   position: relative;
   width: 24%;
   height: 20.5%;
-  top: -103%;
+  top: -84.5%;
   left: 3%;
 }
 

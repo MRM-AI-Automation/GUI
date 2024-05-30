@@ -22,7 +22,7 @@ def add_overlay(image, angle, lat, long, elevation):
     image = cv2.putText(image, f'Accuracy:- 1.5 meters', (230, 35), cv2.FONT_HERSHEY_SIMPLEX,
                         1, (0, 255, 0), 2, cv2.LINE_AA)  
 
-    overlay_image = cv2.imread('/home/nikhilesh/camera_ws/src/science/scripts/needle2.png', cv2.IMREAD_UNCHANGED)
+    overlay_image = cv2.imread('/home/siddharth/camera_ws/src/science/scripts/needle2.png', cv2.IMREAD_UNCHANGED)
     overlay_image = cv2.resize(overlay_image, (130, 130))
     row, col, _ = overlay_image.shape
     center = tuple(np.array([row, col]) / 2)
@@ -41,7 +41,7 @@ def add_overlay(image, angle, lat, long, elevation):
                 needle_image[y + y_pos, x + x_pos, 1] = overlay_image[y, x, 1]
                 needle_image[y + y_pos, x + x_pos, 2] = overlay_image[y, x, 2]
 
-    overlay_image1 = cv2.imread('/home/nikhilesh/camera_ws/src/science/scripts/MRM_logo.png', cv2.IMREAD_UNCHANGED)
+    overlay_image1 = cv2.imread('/home/siddharth/camera_ws/src/science/scripts/MRM_logo.png', cv2.IMREAD_UNCHANGED)
     overlay_image1 = cv2.resize(overlay_image1, (100, 100))
 
     x_pos = (image.shape[1]) - overlay_image1.shape[1] - 20
@@ -58,7 +58,7 @@ def add_overlay(image, angle, lat, long, elevation):
 
     return mrm_image
 
-input_image = cv2.imread('/home/nikhilesh/camera_ws/src/science/scripts/a.png')  
+input_image = cv2.imread('/home/siddharth/camera_ws/src/science/scripts/a.png')  
 output_image = add_overlay(input_image, angle=45, lat=37.7749, long=-122.4194, elevation=50)
 
 cv2.imshow('Output Image', output_image)

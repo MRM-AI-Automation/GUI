@@ -1,4 +1,4 @@
-# dummy_data_generator.py
+    # dummy_data_generator.py
 from flask import Flask, render_template, Response
 import socketio
 import time
@@ -21,7 +21,7 @@ bridge = CvBridge()
 
 
 receiver_ip1 = ''
-receiver_port1 = 12346
+receiver_port1 = 12348
 
 server_sock1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_sock1.bind((receiver_ip1, receiver_port1))
@@ -32,18 +32,6 @@ print(f"Waiting for a connection on {receiver_ip1}:{receiver_port1}")
 connection1, sender_address1 = server_sock1.accept()
 print(f"Connection established with {sender_address1}")
 
-fixed_latitude = 13.3482785  # Example latitude
-fixed_longitude = 74.7911517  # Example longitude
-
-def fluctuate_coordinates(latitude, longitude):
-    # Fluctuating value for latitude
-        fluctuated_latitude = latitude + (random.random() - 0.5) / 100000
-        
-        # Fluctuating value for longitude
-        fluctuated_longitude = longitude + (random.random() - 0.5) / 100000
-        
-        # Return fluctuated coordinates
-        return round(fluctuated_latitude, 6), round(fluctuated_longitude, 6)
 
 def generate_dummy_data():
     with open('/home/siddharth/GUI/flask_app/saving/science_data.txt', 'w', newline='') as txtfile:
@@ -55,24 +43,32 @@ def generate_dummy_data():
                 # print('hi')
                 data3 = connection1.recv(1024).decode('utf-8')
                 # data3 = "S676.51,876.66,714.08,858.39,788.23,736.20M0.00T24.44EZC110M110O0F400T33.00P1006.00H67.40DSX"
-                # data3 = "S676.51,876.66,714.08,858.39,788.23,736.20M0.00T24.44P50EZC110M110O0F400T33.00P1006.00H67.40DSXL13.555B77.055"
+                # data3 = "S676.51,876.66,714.08,858.39,788.23,736.20M5.00T24.44EZC110M110O5F400T33.00P1006.00H67.40DSL69999X13.555B77.055"
+                
+
                 # print(data3)
                 try:
                     data1,data2 = data3.split('Z')
                     # print("hello")
-                    print(data1)
+                    # print(data1)
+                    # print(data2)
                 except:
                     continue
-                
                 # lat, lon = fluctuate_coordinates(fixed_latitude, fixed_longitude)
                 try:
                     # if 'S' in data1 and 'M' in data1 and 'T' in data1 and 'P' in data1 and 'E' in data1 and 'M' in data2 and 'O' in data2 and 'F' in data2 and 'T' in data2 and 'P' in data2 and 'H' in data2 and 'O' in data2 and data2.endswith('X'):
-                    combine1 = data1[1:-1].replace('M', ',').replace('T', ',').replace('P', ',')
-                    spec1, spec2, spec3, spec4, spec5, spec6, moistmeter, temp,LDR = combine1.split(',')
-                    combine2 = data2[1:-1].replace('M', ',').replace('H', ',').replace('P', ',').replace('T', ',').replace('O', ',').replace('F', ',').replace('D', ',').replace('L', ',').replace('B', ',')
-                    coo, meth, tvoc, co2, temp1, pres, hum, dir,lat,lon = combine2.split(',')
-                    print(f"Received data: {combine1}")
-                    print(f"Received data: {combine2}")
+                    combine1 = data1[1:-1].replace('M',',').replace('T',',').replace('K',',')
+                    # print(f"Received data: {combine1}")
+                    spec1, spec2, spec3, spec4, spec5, spec6, moistmeter,temp = combine1.split(',')
+                    # print('hi')
+                    combine2 = data2[1:-1].replace('M', ',').replace('H', ',').replace('P', ',').replace('T', ',').replace('O', ',').replace('F', ',').replace('D', ',').replace('X', ',').replace('B', ',').replace('L',',')
+                    print(f"Received data 2: {combine2}")
+                    coo, meth, tvoc, co2, temp1, pres, hum, dir,res,lat,lon = combine2.split(',')
+                    # print(f"Received data: {combine1}")
+                    # print(f"Received data: {combine2}")
+                    # print(lat)
+                    # print(dir)
+                    cur = 0
                 except:
                     continue
 
@@ -125,8 +121,8 @@ def generate_dummy_data():
                     },
                     'gps': 
                     {
-                        'latitude': lat,
-                        'longitude': lon,
+                        'lat': lat,
+                        'lon': lon,
                         'direction': dir,
                     },
                     'as726x': {
@@ -137,10 +133,10 @@ def generate_dummy_data():
                         's5':spec5,
                         's6':spec6,
                         },
-                    'fluorometer': 
+                    'flurometer': 
                     {
-                        'current': cur,  
-                        'resistance': res,
+                        'cur': cur,  
+                        'res': res,
                     },
                     # 'carson': carson_data,
                     'soil_probe': 
@@ -174,3 +170,8 @@ if __name__ == '__main__':
     # dummy_data_thread.start()
     print("started") 
     
+
+
+
+
+

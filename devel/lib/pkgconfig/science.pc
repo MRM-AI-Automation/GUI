@@ -1,1 +1,8 @@
-/home/nikhilesh/GUII/devel/.private/science/lib/pkgconfig/science.pc
+prefix=/home/siddharth/GUI/devel
+
+Name: science
+Description: Description of science
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

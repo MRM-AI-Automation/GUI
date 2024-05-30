@@ -1,8 +1,0 @@
-prefix=/home/nikhilesh/GUII/devel/.private/science
-
-Name: science
-Description: Description of science
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

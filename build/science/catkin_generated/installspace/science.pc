@@ -1,4 +1,4 @@
-prefix=/home/nikhilesh/GUII/install
+prefix=/home/siddharth/GUI/install
 
 Name: science
 Description: Description of science

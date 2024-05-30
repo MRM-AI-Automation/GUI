@@ -67,10 +67,10 @@ class GUI(QWidget):
 
     def update_image(self):
         try:
-            camera_image = rospy.wait_for_message('/usb_cam/image_raw/compressed', CompressedImage, timeout=1)
+            camera_image = rospy.wait_for_message('/camera2/image_raw/compressed', CompressedImage, timeout=1)
             np_arr = np.frombuffer(camera_image.data, np.uint8)
             cv_image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-            cv_image_bgr = cv2.cvtColor(cv_image, cv2.COLOR_RGB2BGR)  # Convert to BGR format
+            cv_image_bgr = cv2.cvtColor(cv_image, cv2.COLOR_RGB2BGR) 
 
             height, width, channel = cv_image_bgr.shape
             bytes_per_line = 3 * width
@@ -93,17 +93,17 @@ class GUI(QWidget):
         pixmap = label.pixmap()
         if pixmap:
             screenshot_path = os.path.join(
-                f"/home/nikhilesh/GUII/src/science/scripts/{folder}/screenshot_{site_number}.png"
+                f"/home/siddharth/GUI/src/science/scripts/{folder}/screenshot_{site_number}.png"
             )
             pixmap.save(screenshot_path)
             print(f"Saved screenshot for Site {folder}: {screenshot_path}")
 
     def stitch_images(self, site_number):
         if site_number == 1:
-            folder_path = '/home/nikhilesh/GUII/src/science/scripts/panorama_site1'
+            folder_path = '/home/siddharth/GUI/src/science/scripts/panorama_site1'
             count1 = self.count1
         elif site_number == 2:
-            folder_path = '/home/nikhilesh/GUII/src/science/scripts/panorama_site2'
+            folder_path = '/home/siddharth/GUI/src/science/scripts/panorama_site2'
             count1 = self.count1
         else:
             print("Invalid site number.")
